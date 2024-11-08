@@ -1,7 +1,7 @@
 # SelecTHU 清华选课助手 后端部分
 ## 实现框架
 - 语言：Python 3.12
-- 框架：Django 5.12
+- 框架：Django 5.1
 - 数据库：PostgreSQL 17
 
 ## 数据库部分
