@@ -1,4 +1,8 @@
 # SelecTHU 清华选课助手 后端部分
+## 实现框架
+- 语言：Python 3.12
+- 框架：Django 5.12
+- 数据库：PostgreSQL 17
 
 ## 数据库部分
 ### 接口列表
@@ -36,18 +40,18 @@
        - `semester`: 学期
     - 返回值: `{status: status_code, plan: plan_data}`
     - 说明: 返回对应专业的培养方案信息。 `plan_data` 为培养方案的详细信息，具体定义见 `还没想好`。
-5. <span style="color:rgb(255, 50, 50)">*TODO: 其他接口*</span>
+5. *TODO: 其他接口*
 
 ### 数据库设计
 1. 状态码 `status_code` 定义：<span id="def-status_code"></span>
     - `100`: 数据库状态正常，可以进行交互。（没有对数据库进行查询或修改操作，一般出现在[接口1](#api-status)）
     - `101`: 数据库状态异常，无法进行交互。（一般出现在[接口1](#api-status)）
     - `200`: 请求成功，返回数据正常。
-    - <span style="color:rgb(255, 50, 50)">*TODO: 其他状态码*</span>
+    - *TODO: 其他状态码*
 2. 课程数据结构（简） `course` 定义：<span id="def-course-struct"></span>
     - `course_id`: 课程的唯一标识符。
-    - <span style="color:rgb(255, 50, 50)">*TODO: 其他定义*</span>
+    - *TODO: 其他定义*
 3. 课程数据结构（详） `course_detail` 定义：<span id="def-course-struct-detail"></span>
     - `course_id`: 课程的唯一标识符。
-    - <span style="color:rgb(255, 50, 50)">*TODO: 其他定义*</span>
-4. <span style="color:rgb(255, 50, 50)">*TODO: 其他定义*</span>
+    - *TODO: 其他定义*
+4. *TODO: 其他定义*
