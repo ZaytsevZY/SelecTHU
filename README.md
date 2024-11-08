@@ -11,14 +11,30 @@
 |   ├── [frontend]
 ├── backend
 |   ├── app
-|   |   ├── [app]
+|   |   ├── __init__.py
+|   |   ├── asgi.py
+|   |   ├── settings.py
+|   |   ├── urls.py
+|   |   └── wsgi.py
 |   ├── db
 |   |   ├── v1
-|   |   |   ├── [v1]
+|   |   |   ├── migrations
+|   |   |   |   └── __init__.py
+|   |   |   ├── __init__.py
+|   |   |   ├── admin.py
+|   |   |   ├── apps.py
+|   |   |   ├── models.py
+|   |   |   ├── tests.py
+|   |   |   ├── urls.py
+|   |   |   └── views.py
 |   |   ├── __init__.py
 |   |   └── urls.py
+|   ├── Dockerfile
 |   ├── manage.py
 |   ├── requirements.txt
 |   └── README.md
+├── nginx
+|   └── app.conf
+├── docker-compose.yml
 └── README.md
 ```

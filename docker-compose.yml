@@ -1,0 +1,69 @@
+services:
+  # 数据库(postgres)
+  db:
+    image: postgres:13
+    volumes:
+      - /home/ubuntu/postgres:/var/lib/postgresql/data
+    expose:
+      - "5432"
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - TZ=Asia/Shanghai
+    networks:
+      - db_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}"]
+      timeout: 5s
+      interval: 30s
+      retries: 5
+
+  # 后端服务(Django)
+  # TODO：根据后续实际情况修改
+  backend:
+    restart: always
+    build: ./backend
+    command: >
+      bash -c
+      "python manage.py collectstatic --no-input &&
+      python manage.py makemigrations app db.v1 &&
+      python manage.py migrate &&
+      DJANGO_SETTINGS_MODULE=app.settings_prod gunicorn -w4 -b 0.0.0.0:8000 --log-level=debug app.wsgi"
+    volumes:
+      - ./backend:/backend
+    expose:
+      - "8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - db_network
+      - web_network
+
+  # 前端服务
+  frontend:
+    # TODO：完成前端服务配置（如果前端是静态文件，则后续修改为nginx代理）
+
+  # nginx代理
+  # TODO：待前端形式确定后完成nginx代理配置
+  nginx:
+    restart: always
+    image: nginx:latest
+    ports:
+      - "8080:8080"
+      - "7890:7890"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - web_network
+
+networks:
+  db_network:
+    driver: bridge
+  web_network:
+    driver: bridge
