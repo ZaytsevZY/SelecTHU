@@ -5,6 +5,10 @@
 - 数据库：PostgreSQL 17
 
 ## 数据库部分
+### 简要说明
+- 数据库使用 PostgreSQL 作为后端数据库，通过 Django ORM 进行操作。
+- 数据库提供的接口以 `/db` 为前缀，仅供后端使用，在代理时不会暴露给前端。
+
 ### 接口列表
 1. 获取数据库状态：<span id="api-status"></span>
     - 接口：`/db/v1/status`
