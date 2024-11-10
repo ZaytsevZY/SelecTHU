@@ -3,6 +3,15 @@ from django.db import models
 
 # 用户表（总表）
 class User(models.Model):
+    """
+    用户表（总表）
+
+    :id: 学号（用户唯一标识）（主键）
+    :major: 专业
+    :session: 入学年份
+    :favorite: 收藏课程
+    :decided: 已选课程
+    """
     # 个人基本信息
     user_id = models.CharField(
         max_length=12, primary_key=True, unique=True, name="id"
@@ -36,6 +45,14 @@ class User(models.Model):
 
 # 培养方案表
 class Curriculum(models.Model):
+    """
+    培养方案表
+
+    :id: 自增id（主键）
+    :major: 专业
+    :grade: 年级
+    :courses: 课程列表
+    """
     _id = models.AutoField(primary_key=True, name="id")  # 自增id（主键）
 
     # 识别信息（专业、年级）

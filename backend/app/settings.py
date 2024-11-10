@@ -88,7 +88,6 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT'),
         "OPTIONS" : {
             "client_encoding": "UTF8",
-            "timezone": "Asia/Shanghai",
         }
     }
 }

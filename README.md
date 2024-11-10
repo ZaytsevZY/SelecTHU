@@ -23,12 +23,14 @@
 |   |   |   ├── __init__.py
 |   |   |   ├── admin.py
 |   |   |   ├── apps.py
+|   |   |   ├── const.py
 |   |   |   ├── models.py
 |   |   |   ├── tests.py
 |   |   |   ├── urls.py
 |   |   |   └── views.py
 |   |   ├── __init__.py
 |   |   └── urls.py
+|   ├── DevLog.md
 |   ├── Dockerfile
 |   ├── manage.py
 |   ├── requirements.txt

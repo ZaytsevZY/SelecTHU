@@ -36,14 +36,14 @@
       - `course_id`: 课程的唯一标识符（不是课程号，需要通过课程信息计算得到）
     - 返回值: `{status: status_code, course: course_detail_data}`
     - 说明: 对应课程的详细信息。 `course_detail_data` 为课程的详细信息，具体定义见[课程数据结构（详）](#def-course-struct-detail)。
-4. 获取培养方案信息：<span id="api-query-plan"></span>
-    - 接口: `/db/v1/query/plan`
+4. 获取培养方案信息：<span id="api-query-curriculum"></span>
+    - 接口: `/db/v1/query/curriculum`
     - 请求方法: `GET`
     - 请求参数：
        - `major`: 专业名称（或院系名称）
        - `semester`: 学期
-    - 返回值: `{status: status_code, plan: plan_data}`
-    - 说明: 返回对应专业的培养方案信息。 `plan_data` 为培养方案的详细信息，具体定义见 `还没想好`。
+    - 返回值: `{status: status_code, curriculum: curriculum_data}`
+    - 说明: 返回对应专业的培养方案信息。 `curriculum_data` 为培养方案的详细信息，具体定义见 `还没想好`。
 5. *TODO: 其他接口*
 
 ### 数据库设计
