@@ -8,13 +8,12 @@ import db.v1.models as models
 
 # 测试接口连接
 @require_http_methods(["GET"])
-def test(request):
+def status(request):
     """
     测试接口连接
     """
     return JsonResponse({
         "status": 200,
-        "message": "Connect successful"
     })
 
 
