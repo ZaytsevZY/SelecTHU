@@ -35,6 +35,7 @@
 |   └── README.md
 ├── nginx
 |   └── app.conf
+├── .gitignore
 ├── docker-compose.yml
 └── README.md
 ```
