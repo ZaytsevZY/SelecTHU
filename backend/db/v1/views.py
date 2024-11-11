@@ -14,6 +14,7 @@ def status(request):
     """
     return JsonResponse({
         "status": 200,
+        "message": "connect successfully"
     })
 
 
@@ -45,3 +46,48 @@ def get_curriculum(request):
         "status": 200,
         "curriculum":  curriculum.courses
     })
+
+
+@require_http_methods(["GET"])
+def get_user(request):
+    """
+    查询用户信息
+
+    :param request: 发送的请求（包含用户id）
+    :return: 返回的信息
+    """
+    id_ = request.GET.get("id")
+
+    # 检查输入合法性
+    if id_ is None:
+        return JsonResponse(const.RESPONSE_400)
+    
+    # 查询
+    user = models.User.objects.filter(user_id=id_)
+    if not user:
+        return JsonResponse(const.RESPONSE_404)
+    
+    # 返回结果
+    return JsonResponse({
+        "status": 200,
+        "major": user.user_major,
+        "session": user.user_session,
+        "favorite": user.user_favorite,
+        "decided": user.user_decided
+    })
+
+
+
+@require_http_methods(["GET"])
+def get_courses(request):
+    pass
+
+
+@require_http_methods(["GET"])
+def get_course(request):
+    pass
+
+
+@require_http_methods(["GET"])
+def get_course_detail(request):
+    pass
