@@ -80,7 +80,23 @@ def get_user(request):
 
 @require_http_methods(["GET"])
 def get_courses(request):
-    pass
+    """
+    查询课程列表
+
+    :param request: 发送的请求
+    :return: 返回的信息
+    """
+    # 查询数据库
+    courses = models.MainCourses.objects.all().values()
+
+    if not courses:
+        return JsonResponse(const.RESPONSE_404)
+    
+    # 返回结果
+    return JsonResponse({
+        "status": 200,
+        "courses": list(courses)
+    })
 
 
 @require_http_methods(["GET"])

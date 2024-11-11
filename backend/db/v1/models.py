@@ -19,7 +19,7 @@ class User(models.Model):
     )  # 学号（用户唯一标识）（主键）（可能需要加密处理？）
     user_major = models.CharField(max_length=20, name="major")  # 专业
     user_session = models.IntegerField(name="session")  # 入学年份
-
+    #  semester?
     # 课程信息（列表）
     user_favorite = models.JSONField(name="favorite")  # 收藏课程
     # 内部结构：
