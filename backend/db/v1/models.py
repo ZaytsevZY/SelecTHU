@@ -7,30 +7,35 @@ class Curriculum(models.Model):
     培养方案表
 
     :id: 培养方案的sha256值（主键）
-    :major: 专业
-    :semester: 学期
     :courses: 课程列表
     """
 
     # id_ = models.AutoField(primary_key=True, name="id")  # 自增id（主键）
-    id_ = models.CharField(primary_key=True, max_length=64, name="id")  # 自增id（主键）（使用sha256）
+    _id = models.CharField(primary_key=True, max_length=64, name="id")  # id（主键）（使用sha256）
     # # 识别信息（专业、年级）
-    major = models.CharField(max_length=20, name="major", null=True)  # 专业
-    semester = models.IntegerField(name="semester", null=True)  # 学期
+    # major = models.CharField(max_length=20, name="major", null=True)  # 专业
+    # semester = models.IntegerField(name="semester", null=True)  # 学期
 
     # 课程信息（列表）
     courses = models.JSONField(name="courses")  # 课程列表
     # 内部结构：
-    # [
-    #     <course_code: str>,
-    #     ...
-    # ]
+    # {
+    #     key1: [
+    #         <course_code: str>,
+    #         ...
+    #     ],
+    #     key2: [
+    #         <course_code: str>,
+    #         ...
+    #     ],
+    #     key3: [
+    #         <course_code: str>,
+    #         ...
+    #     ],
+    # }
 
     class Meta:
         db_table = "curriculum"
-
-    def __str__(self):
-        return f"<{self.major}, {self.grade}>"
     
 
 # 用户表（总表）
@@ -39,17 +44,15 @@ class User(models.Model):
     用户表（总表）
 
     :id: 学号（用户唯一标识）（主键）
-    :major: 专业
-    :session: 入学年份
     :favorite: 收藏课程
     :decided: 已选课程
+    :curriculum: 培养方案（外键）
     """
 
     # 个人基本信息
     user_id = models.CharField(
         max_length=12, primary_key=True, unique=True, name="id"
-    )  # 学号（用户唯一标识）（主键）（可能需要加密处理？）
-    user_major = models.CharField(max_length=20, name="major")  # 专业
+    )  # 学号（用户唯一标识）（主键）
 
     user_curriculum = models.ForeignKey(to=Curriculum, on_delete=models.DO_NOTHING, name="curriculum")  # 培养方案
 
@@ -72,9 +75,6 @@ class User(models.Model):
 
     class Meta:
         db_table = "user"
-
-    def __str__(self):
-        return f"<{self.user_id}: {self.user_major}, {self.user_session}>"
 
 
 # 课程详细信息表
