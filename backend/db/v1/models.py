@@ -1,6 +1,38 @@
 from django.db import models
 
 
+# 培养方案表
+class Curriculum(models.Model):
+    """
+    培养方案表
+
+    :id: 培养方案的sha256值（主键）
+    :major: 专业
+    :grade: 年级
+    :courses: 课程列表
+    """
+
+    # id_ = models.AutoField(primary_key=True, name="id")  # 自增id（主键）
+    id_ = models.CharField(primary_key=True, max_length=64, name="id")  # 自增id（主键）（使用sha256）
+    # # 识别信息（专业、年级）
+    major = models.CharField(max_length=20, name="major", null=True)  # 专业
+    grade = models.IntegerField(name="grade", null=True)  # 年级
+
+    # 课程信息（列表）
+    courses = models.JSONField(name="courses")  # 课程列表
+    # 内部结构：
+    # [
+    #     <course_code: str>,
+    #     ...
+    # ]
+
+    class Meta:
+        db_table = "curriculum"
+
+    def __str__(self):
+        return f"<{self.major}, {self.grade}>"
+    
+
 # 用户表（总表）
 class User(models.Model):
     """
@@ -18,8 +50,9 @@ class User(models.Model):
         max_length=12, primary_key=True, unique=True, name="id"
     )  # 学号（用户唯一标识）（主键）（可能需要加密处理？）
     user_major = models.CharField(max_length=20, name="major")  # 专业
-    user_session = models.IntegerField(name="session")  # 入学年份
-    #  semester?
+
+    user_curriculum = models.ForeignKey(to=Curriculum, on_delete=models.DO_NOTHING, name="curriculum")  # 培养方案
+
     # 课程信息（列表）
     user_favorite = models.JSONField(name="favorite")  # 收藏课程
     # 内部结构：
@@ -42,38 +75,6 @@ class User(models.Model):
 
     def __str__(self):
         return f"<{self.user_id}: {self.user_major}, {self.user_session}>"
-
-
-# 培养方案表
-class Curriculum(models.Model):
-    """
-    培养方案表
-
-    :id: 自增id（主键）
-    :major: 专业
-    :grade: 年级
-    :courses: 课程列表
-    """
-
-    id_ = models.AutoField(primary_key=True, name="id")  # 自增id（主键）
-
-    # 识别信息（专业、年级）
-    major = models.CharField(max_length=20, name="major")  # 专业
-    grade = models.IntegerField(name="grade")  # 年级
-
-    # 课程信息（列表）
-    courses = models.JSONField(name="courses")  # 课程列表
-    # 内部结构：
-    # [
-    #     <course_code: str>,
-    #     ...
-    # ]
-
-    class Meta:
-        db_table = "curriculum"
-
-    def __str__(self):
-        return f"<{self.major}, {self.grade}>"
 
 
 # 课程详细信息表

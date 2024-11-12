@@ -49,8 +49,8 @@
     - 请求方法: `GET`
     - 请求参数：
        - `user_id`: 用户学号
-    - 返回值: `{status: status_code, major: major_data, session: session_data, favorite: favorite_data, decided: decided_data}`
-    - 说明: 返回对应用户的详细信息。 `major` 为用户的专业信息，`session` 为用户的入学年份信息，`favorite` 为用户的收藏信息，`decided` 为用户的已选课程信息。
+    - 返回值: `{status: status_code, major: major_data, session: session_data, favorite: favorite_data, decided: decided_data, curriculum: curriculum_data}`
+    - 说明: 返回对应用户的详细信息。 `major` 为用户的专业信息，`session` 为用户的入学年份信息，`favorite` 为用户的收藏信息，`decided` 为用户的已选课程信息，`curriculum` 为用户的培养方案信息。
 7. *TODO: 其他接口*
 
 ### 数据库设计
