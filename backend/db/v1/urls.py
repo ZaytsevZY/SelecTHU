@@ -14,4 +14,5 @@ urlpatterns = [
     path("query/course/detail", views.get_course_detail, name="get_course_detail_v1"),
     # 修改接口
     path("add/curriculum", views.add_curriculum, name="add_curriculum_v1"),
+    path("add/user", views.add_user, name="add_user_v1"),
 ]

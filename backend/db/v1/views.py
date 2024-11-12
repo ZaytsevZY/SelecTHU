@@ -23,11 +23,11 @@ def get_curriculum(request):
     """
     根据专业年级查询培养方案
 
-    :param request: 发送的请求（包含专业 `major<str>` 和年级 `grade<int>` ）
+    :param request: 发送的请求（包含专业 `major<str>` 和学期 `semester<int>` ）
     :return: 返回的信息
     """
     major: str = request.GET.get("major")
-    grade: int = request.GET.get("grade")
+    semester: int = request.GET.get("semester")
 
     # 检查输入合法性
     if major is None or grade is None:
@@ -36,7 +36,7 @@ def get_curriculum(request):
     #     return JsonResponse(const.RESPONSE_404)
 
     # 查询数据库
-    curriculum = models.Curriculum.objects.filter(major=major, grade=grade).first()
+    curriculum = models.Curriculum.objects.filter(major=major, semester=semester).first()
     if not curriculum:
         return JsonResponse(const.RESPONSE_404)
 
@@ -130,31 +130,43 @@ def get_course_detail(request):
 
 
 @require_http_methods(["POST"])
+def add_user(request):
+    """
+    添加用户
+    
+    :param request: 发送的请求（包含专业 `major<str>` 和学期 `semester<int>` ）
+    :return: 返回的信息
+    """
+    pass
+
+
+@require_http_methods(["POST"])
 def add_curriculum(request):
     """
     添加培养方案
 
-    :param request: 发送的请求（可能包含专业 `major<str>` 和年级 `grade<int>` ）
+    :param request: 发送的请求（包含专业 `major<str>` 、学期 `semester<int>` 和课程列表 `courses<list>` ）
     :return: 返回的信息
     """
     major: str = request.POST.get("major")
-    grade: int = request.POST.get("grade")
+    semester: int = request.POST.get("semester")
     courses: list = request.POST.get("courses")
 
     # 检查输入合法性
-    if major is None or grade is None or courses is None:
+    if major is None or semester is None or courses is None:
         return JsonResponse(const.RESPONSE_400)
 
     # 创建sha256对象
-    sha256 = hashlib.sha256()
-    sha256.update(f"{major}{grade}".encode())
-    id_ = sha256.hexdigest()
+    salt = "curriculumitemaddcurriculumitem"  # 盐字符串
+    sha256 = hashlib.sha256()  # 创建sha256对象
+    sha256.update(f"{major}{salt}{semester}".encode("utf-8"))  # 更新
+    id_ = sha256.hexdigest()  # 计算id
 
     # 检查是否已存在
     if models.Curriculum.objects.filter(id=id_).first():
         return JsonResponse({"status": 409, "msg": "curriculum already exists"})
     # 添加到数据库
-    curriculum = models.Curriculum(id=id_, major=major, grade=grade, courses=courses)
+    curriculum = models.Curriculum(id=id_, major=major, semester=semester, courses=courses)
     curriculum.save()
 
     # 返回结果

@@ -51,7 +51,26 @@
        - `user_id`: 用户学号
     - 返回值: `{status: status_code, major: major_data, session: session_data, favorite: favorite_data, decided: decided_data, curriculum: curriculum_data}`
     - 说明: 返回对应用户的详细信息。 `major` 为用户的专业信息，`session` 为用户的入学年份信息，`favorite` 为用户的收藏信息，`decided` 为用户的已选课程信息，`curriculum` 为用户的培养方案信息。
-7. *TODO: 其他接口*
+7. 添加培养方案：<span id="api-add-curriculum"></span>
+    - 接口: `/db/v1/add/curriculum`
+    - 请求方法: `POST`
+    - 请求参数：
+       - `major`: 专业名称（或院系名称）
+       - `semester`: 学期
+       - `courses`: 课程列表
+    - 返回值: `{status: status_code, msg: message}`
+    - 说明: 添加对应专业的培养方案信息。 `courses` 为课程列表， `msg` 为返回信息。
+8. 添加用户信息：<span id="api-add-user"></span>
+    - 接口: `/db/v1/add/user`
+    - 请求方法: `POST`
+    - 请求参数：
+       - `user_id`: 用户学号
+       - `major`: 专业名称（或院系名称）
+       - `session`: 入学年份
+    - 返回值: `{status: status_code, msg: message}`
+    - 说明: 添加对应用户的详细信息。 `msg` 为返回信息（正常情况下为 `add curriculum successfully` ）。
+
+9. *TODO: 其他接口*
 
 ### 数据库设计
 1. 课程数据结构（简） `course` 定义：<span id="def-course-struct"></span>

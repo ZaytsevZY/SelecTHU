@@ -8,7 +8,7 @@ class Curriculum(models.Model):
 
     :id: 培养方案的sha256值（主键）
     :major: 专业
-    :grade: 年级
+    :semester: 学期
     :courses: 课程列表
     """
 
@@ -16,7 +16,7 @@ class Curriculum(models.Model):
     id_ = models.CharField(primary_key=True, max_length=64, name="id")  # 自增id（主键）（使用sha256）
     # # 识别信息（专业、年级）
     major = models.CharField(max_length=20, name="major", null=True)  # 专业
-    grade = models.IntegerField(name="grade", null=True)  # 年级
+    semester = models.IntegerField(name="semester", null=True)  # 学期
 
     # 课程信息（列表）
     courses = models.JSONField(name="courses")  # 课程列表
