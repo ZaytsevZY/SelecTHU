@@ -26,6 +26,11 @@ RESPONSE_404: dict = {
     "msg": "Not Found",
 }  # 404错误响应：资源未找到
 
+RESPONSE_409: dict = {
+    "status": 409,
+    "msg": "Conflict",
+}  # 409错误响应：资源冲突
+
 RESPONSE_500: dict = {
     "status": 500,
     "msg": "Internal Server Error",
