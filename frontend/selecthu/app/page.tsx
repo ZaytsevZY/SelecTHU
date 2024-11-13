@@ -1,190 +1,111 @@
-"use client"
+// app/page.tsx
+"use client";
+
+import { useState } from "react";
 import {
   Box,
   Button,
-  Container,
+  Checkbox,
   Flex,
-  Grid,
-  Heading,
+  FormControl,
+  FormLabel,
   Input,
-  InputGroup,
-  InputLeftElement,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Tag,
+  Link,
   Text,
   VStack,
-  useColorModeValue,
-  IconButton,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  useDisclosure,
-  Avatar
-} from "@chakra-ui/react"
-import { SearchIcon, BellIcon, ChevronDownIcon, HamburgerIcon } from '@chakra-ui/icons'
+} from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 
-export default function Page() {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const bgColor = useColorModeValue('white', 'gray.800')
-  const borderColor = useColorModeValue('gray.200', 'gray.700')
+export default function LoginPage() {
+  const router = useRouter();
+  const [account, setAccount] = useState("");
+  const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(false);
+
+  // 处理登录按钮点击事件
+  const handleLogin = () => {
+    // 在这里添加实际的登录逻辑
+    // 登录成功后跳转到主界面
+    router.push("/main");
+  };
 
   return (
-    <Box minH="100vh" bg={useColorModeValue('gray.50', 'gray.900')}>
-      {/* 导航栏 */}
-      <Flex
-        as="nav"
-        position="fixed"
-        w="full"
-        bg={bgColor}
-        borderBottom="1px"
-        borderColor={borderColor}
-        h="16"
-        alignItems="center"
-        justifyContent="space-between"
-        px={4}
-        zIndex="1000"
+    <Flex
+      height="100vh"
+      alignItems="center"
+      justifyContent="center"
+      bg="brand.50"  // 使用浅蓝色背景
+    >
+      <Box
+        bg="white"
+        p={8}
+        maxWidth="400px"
+        borderRadius="md"
+        boxShadow="lg"
       >
-        <Flex alignItems="center">
-          <IconButton
-            display={{ base: 'flex', md: 'none' }}
-            onClick={onOpen}
-            variant="outline"
-            aria-label="open menu"
-            icon={<HamburgerIcon />}
-          />
-          <Heading size="md" ml={2}>SelecTHU</Heading>
-        </Flex>
-
-        <Flex alignItems="center" gap={4}>
-          <IconButton
-            variant="ghost"
-            aria-label="notifications"
-            icon={<BellIcon />}
-          />
-          <Menu>
-            <MenuButton
-              as={Button}
-              rightIcon={<ChevronDownIcon />}
-              variant="ghost"
+        <VStack spacing={4} align="stretch">
+          <Text fontSize="2xl" textAlign="center" mb={4} color="brand.500">
+            登录
+          </Text>
+          <FormControl id="account" isRequired>
+            <FormLabel>账号</FormLabel>
+            <Input
+              type="text"
+              value={account}
+              onChange={(e) => setAccount(e.target.value)}
+              placeholder="请输入账号"
+            />
+          </FormControl>
+          <FormControl id="password" isRequired>
+            <FormLabel>密码</FormLabel>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="请输入密码"
+            />
+          </FormControl>
+          <Flex alignItems="center" justifyContent="space-between">
+            <Checkbox
+              isChecked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
+              colorScheme="purpleAccent"
             >
-              <Avatar size="sm" name="User Name" />
-            </MenuButton>
-            <MenuList>
-              <MenuItem>个人信息</MenuItem>
-              <MenuItem>设置</MenuItem>
-              <MenuItem>退出登录</MenuItem>
-            </MenuList>
-          </Menu>
-        </Flex>
-      </Flex>
-
-      {/* 侧边栏 - 移动端 */}
-      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerHeader>菜单</DrawerHeader>
-          <DrawerBody>
-            <VStack align="stretch" spacing={3}>
-              <Button variant="ghost">课程列表</Button>
-              <Button variant="ghost">已选课程</Button>
-              <Button variant="ghost">课表</Button>
-              <Button variant="ghost">通知</Button>
-            </VStack>
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
-
-      {/* 主要内容 */}
-      <Container maxW="container.xl" pt="20">
-        <Grid
-          templateColumns={{ base: '1fr', md: '200px 1fr' }}
-          gap={6}
-          p={4}
-        >
-          {/* 侧边栏 - 桌面端 */}
-          <Box
-            display={{ base: 'none', md: 'block' }}
-            bg={bgColor}
-            p={4}
-            borderRadius="lg"
-            borderWidth="1px"
-            borderColor={borderColor}
+              记住密码
+            </Checkbox>
+          </Flex>
+          <Button colorScheme="brand" onClick={handleLogin}>
+            登录
+          </Button>
+          <Flex
+            mt={4}
+            justifyContent="space-between"
+            flexWrap="wrap"
           >
-            <VStack align="stretch" spacing={3}>
-              <Button variant="ghost">课程列表</Button>
-              <Button variant="ghost">已选课程</Button>
-              <Button variant="ghost">课表</Button>
-              <Button variant="ghost">通知</Button>
-            </VStack>
-          </Box>
-
-          {/* 内容区 */}
-          <VStack align="stretch" spacing={6}>
-            {/* 搜索框 */}
-            <InputGroup>
-              <InputLeftElement pointerEvents="none">
-                <SearchIcon color="gray.400" />
-              </InputLeftElement>
-              <Input placeholder="搜索课程..." />
-            </InputGroup>
-
-            {/* 课程表格 */}
-            <Box
-              bg={bgColor}
-              p={4}
-              borderRadius="lg"
-              borderWidth="1px"
-              borderColor={borderColor}
-              overflowX="auto"
-            >
-              <Table variant="simple">
-                <Thead>
-                  <Tr>
-                    <Th>课程名称</Th>
-                    <Th>教师</Th>
-                    <Th>时间</Th>
-                    <Th>地点</Th>
-                    <Th>学分</Th>
-                    <Th>操作</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {[1, 2, 3].map((i) => (
-                    <Tr key={i}>
-                      <Td>
-                        <VStack align="start" spacing={1}>
-                          <Text fontWeight="bold">计算机科学导论 {i}</Text>
-                          <Tag size="sm" colorScheme="green">必修</Tag>
-                        </VStack>
-                      </Td>
-                      <Td>张教授</Td>
-                      <Td>周一 1-2节</Td>
-                      <Td>一教101</Td>
-                      <Td>3.0</Td>
-                      <Td>
-                        <Button size="sm" colorScheme="blue">
-                          选课
-                        </Button>
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </Box>
-          </VStack>
-        </Grid>
-      </Container>
-    </Box>
-  )
+            <Link href="/info/about" m={1}>
+              关于我们
+            </Link>
+            <Link href="/info/contact" m={1}>
+              联系我们
+            </Link>
+            <Link href="/info/help" m={1}>
+              帮助中心
+            </Link>
+            <Link href="/info/privacy" m={1}>
+              隐私条款
+            </Link>
+            <Link href="/info/agreement" m={1}>
+              用户协议
+            </Link>
+            <Link href="/info/other" m={1}>
+              其他
+            </Link>
+          </Flex>
+          <Text textAlign="center" color="gray.500" fontSize="sm" mt={2}>
+            @清华大学软件学院
+          </Text>
+        </VStack>
+      </Box>
+    </Flex>
+  );
 }
