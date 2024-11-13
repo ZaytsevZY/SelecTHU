@@ -41,8 +41,9 @@ frontend/
 |	|	│   └── page.tsx             // 主页面
 |	|	├── search/
 |	|	│   └── page.tsx             // 搜索课程界面
-|	|	└── types/
-|	|	    └── course.ts            // 类型定义
+|	|	├── types/
+|	|	|   └── course.ts            // 类型定义
+|	|	└── page.tsx				 // 登录界面
 |   └── theme/
 |		└── index.ts				 // 自定义主题
 |    
