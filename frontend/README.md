@@ -4,6 +4,7 @@ Using Chakra UI in Next.js (App)
 
 ## 文件结构介绍（未完成）
 
+```
 app/
 ├── components/
 │   ├── layout/
@@ -18,6 +19,7 @@ app/
 │   └── page.tsx             // 主页面
 └── types/
     └── course.ts            // 类型定义
+```
 
 ## TODO
 
