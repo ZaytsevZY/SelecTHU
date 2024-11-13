@@ -22,7 +22,8 @@ frontend/
 |	|	│   |   ├── CourseTable.tsx		// 选课课程列表
 |	|	│   |   ├── FilterSection.tsx	// 筛选条件
 |	|	│   |   ├── SelectedCourseInfo.tsx	// 课程信息显示
-|	|	│   |   ├── SelectedFilters.tsx	// 筛选条件列表
+|	|	│   |   └── SelectedFilters.tsx	// 筛选条件列表
+|	|	│   └── Providers.tsx			// 提供主题样式，管理颜色，渲染声明
 |	|	├── fonts/
 |	|	├── info/
 |	|	│   ├── about/
@@ -39,15 +40,17 @@ frontend/
 |	|	│   |	└── page.tsx		// 其他
 |	|	├── main/
 |	|	│   └── page.tsx             // 主页面
+|	|	├── profile/
+|	|	│   └── page.tsx             // 个人信息界面
 |	|	├── search/
 |	|	│   └── page.tsx             // 搜索课程界面
 |	|	├── types/
-|	|	|   └── course.ts            // 类型定义
+|	|	|   ├── course.ts            // 类型定义
+|	|	|   └── user.ts              // 用户定义
 |	|	└── page.tsx				 // 登录界面
 |   └── theme/
 |		└── index.ts				 // 自定义主题
-|    
-└── README.md
+└── README.md						 // 前端文档
 ```
 
 ## TODO
