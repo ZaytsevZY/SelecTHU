@@ -1,6 +1,6 @@
 // theme/index.ts
 
-import { extendTheme } from "@chakra-ui/react";
+import { extendTheme, ThemeConfig } from "@chakra-ui/react";
 
 // 定义自定义颜色
 const colors = {
@@ -30,8 +30,15 @@ const colors = {
   },
 };
 
+// 定义颜色模式配置
+const config: ThemeConfig = {
+  initialColorMode: "light",
+  useSystemColorMode: false,
+};
+
 // 扩展主题
 const theme = extendTheme({
+  config,
   colors,
   components: {
     Button: {
@@ -56,12 +63,12 @@ const theme = extendTheme({
     },
   },
   styles: {
-    global: {
+    global: (props: any) => ({
       body: {
-        bg: "gray.100",
-        color: "gray.800",
+        bg: props.colorMode === "dark" ? "gray.900" : "gray.100",
+        color: props.colorMode === "dark" ? "gray.100" : "gray.800",
       },
-    },
+    }),
   },
 });
 

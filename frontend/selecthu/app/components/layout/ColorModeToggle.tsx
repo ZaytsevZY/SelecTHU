@@ -1,4 +1,5 @@
-// app/components/layout/ColorModeToggle.tsx
+// frontend/selecthu/app/components/layout/ColorModeToggle.tsx
+
 "use client";
 
 import { IconButton, useColorMode, useColorModeValue } from "@chakra-ui/react";
