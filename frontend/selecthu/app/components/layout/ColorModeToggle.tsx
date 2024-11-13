@@ -1,18 +1,24 @@
-// components/layout/ColorModeToggle.tsx
+// app/components/layout/ColorModeToggle.tsx
 "use client";
 
-import { IconButton, useColorMode } from "@chakra-ui/react";
-import { SunIcon, MoonIcon } from "@chakra-ui/icons";
+import { IconButton, useColorMode, useColorModeValue } from "@chakra-ui/react";
+import { FaMoon, FaSun } from "react-icons/fa";
 
-export default function ColorModeToggle() {
+const ColorModeToggle = () => {
   const { colorMode, toggleColorMode } = useColorMode();
-  
+  const SwitchIcon = useColorModeValue(FaMoon, FaSun);
+
   return (
     <IconButton
-      aria-label="Toggle color mode"
-      icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-      onClick={toggleColorMode}
+      size="md"
+      fontSize="lg"
       variant="ghost"
+      color="current"
+      onClick={toggleColorMode}
+      icon={<SwitchIcon />}
+      aria-label={`切换到 ${colorMode === "light" ? "暗色" : "亮色"} 模式`}
     />
   );
-}
+};
+
+export default ColorModeToggle;

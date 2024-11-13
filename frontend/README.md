@@ -5,20 +5,48 @@ Using Chakra UI in Next.js (App)
 ## 文件结构介绍（未完成）
 
 ```
-app/
-├── components/
-│   ├── layout/
-│   │   ├── Navbar.tsx        // 导航栏组件
-│   │   └── ColorModeToggle.tsx  // 暗色模式切换按钮
-│   └── main/
-│       ├── CourseTable.tsx   // 课程表组件
-│       ├── StatusCard.tsx    // 状态卡片组件（志愿分配和选课阶段）
-│       ├── TeachingPlan.tsx  // 教学计划组件
-│       └── CourseList.tsx    // 课程备选清单组件
-├── main/
-│   └── page.tsx             // 主页面
-└── types/
-    └── course.ts            // 类型定义
+frontend/
+├── selecthu/
+│   ├── app/
+|	|	├── components/
+|	|	│   ├── layout/
+│   |	|	│   ├── Navbar.tsx        // 导航栏组件
+│   |	│   |	└── ColorModeToggle.tsx  // 暗色模式切换按钮
+|	|   |	├── main/
+|	|	│   |   ├── CourseTable.tsx   // 课程表组件
+|	|	│   |   ├── StatusCard.tsx    // 状态卡片组件（志愿分配和选课阶段）
+|	|	│   |   ├── TeachingPlan.tsx  // 教学计划组件
+|	|	│   |   └── CourseList.tsx    // 课程备选清单组件
+|	|   |	└── search/
+|	|	│   |   ├── CommentSection.tsx	// 评论区内容
+|	|	│   |   ├── CourseTable.tsx		// 选课课程列表
+|	|	│   |   ├── FilterSection.tsx	// 筛选条件
+|	|	│   |   ├── SelectedCourseInfo.tsx	// 课程信息显示
+|	|	│   |   ├── SelectedFilters.tsx	// 筛选条件列表
+|	|	├── fonts/
+|	|	├── info/
+|	|	│   ├── about/
+|	|	│   |	└── page.tsx		// 关于我们
+|	|	│   ├── agreement/
+|	|	│   |	└── page.tsx		// 用户协议
+|	|	│   ├── contact/
+|	|	│   |	└── page.tsx		// 联系我们
+|	|	│   ├── help/
+|	|	│   |	└── page.tsx		// 帮助中心
+|	|	│   ├── other/
+|	|	│   |	└── page.tsx		// 隐私条款
+|	|	│   ├── privacy/
+|	|	│   |	└── page.tsx		// 其他
+|	|	├── main/
+|	|	│   └── page.tsx             // 主页面
+|	|	├── search/
+|	|	│   └── page.tsx             // 搜索课程界面
+|	|	└── types/
+|	|	    └── course.ts            // 类型定义
+|   └── theme/
+|		└── index.ts				 // 自定义主题
+|    
+└── README.md
 ```
 
 ## TODO
@@ -41,6 +69,7 @@ app/
 
 - 对接数据库
 - 完善登录界面的各种info界面
+- 修改暗色模式的配色，以及字体不清楚的问题
 
 后期：
 

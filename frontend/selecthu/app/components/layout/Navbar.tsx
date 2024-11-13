@@ -57,7 +57,7 @@ export default function Navbar() {
 
         <HStack spacing={8} alignItems="center">
           <NavLink href="/main">模拟选课</NavLink>
-          <NavLink href="/search">搜索课程</NavLink>
+          <NavLink href="/search">搜索课程</NavLink> {/* 新增搜索课程链接 */}
           <NavLink href="/profile">个人信息</NavLink>
           <ColorModeToggle />
           <Link href="/profile">
