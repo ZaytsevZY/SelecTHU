@@ -51,7 +51,7 @@ def get_curriculum_existance(curriculum: dict):
         curriculum = models.Curriculum.objects.filter(id=id_).exists()
         return {"status": 200, "value": curriculum}
     except Exception as e:
-        return const.RESPONSE_400
+        return const.RESPONSE_500
 
 
 # 查询用户信息
@@ -76,12 +76,13 @@ def get_user(id_: str):
     if not user:
         return const.RESPONSE_404
 
+    curriculum = user.user_curriculum.courses if user.user_curriculum else None
     # 返回结果
     return {
         "status": 200,
         "favorite": user.user_favorite,
         "decided": user.user_decided,
-        "curriculum": user.user_curriculum.courses,
+        "curriculum": curriculum,
     }
 
 
@@ -128,7 +129,7 @@ def get_course(**kwargs):
         - `department<str>` 开课院系
         - `type<str>` 课程类型
 
-    :return: 返回的信息（包含字典 `course<type = dict>` ）
+    :return: 返回的信息（包含字典 `course<type = list[dict]>` ）
     """
     # 先排除掉空值
     for key, value in kwargs.items():
@@ -150,7 +151,7 @@ def get_course(**kwargs):
             kwargs.pop(key)
 
     # 查询数据库
-    # 不返回link字段
+    # 不返回link字段和id字段
     course = models.MainCourses.objects.filter(**kwargs).values(
         "code",
         "name",
@@ -163,7 +164,7 @@ def get_course(**kwargs):
         "selection",
     )
     if course is None:
-        return const.RESPONSE_404
+        return {"status": 200, "course": []}
 
     return {"status": 200, "course": list(course)}
 

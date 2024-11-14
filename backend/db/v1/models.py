@@ -57,7 +57,7 @@ class User(models.Model):
     )  # 学号（用户唯一标识）（主键）
 
     user_curriculum = models.ForeignKey(
-        to=Curriculum, on_delete=models.DO_NOTHING, name="curriculum"
+        to=Curriculum, on_delete=models.DO_NOTHING, name="curriculum", null=True
     )  # 培养方案
 
     # 课程信息（列表）
