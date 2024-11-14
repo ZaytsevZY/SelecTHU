@@ -15,6 +15,16 @@ SALT: tuple = (
     "f7d0b4c7d6c4d5e2b8e5b7e3f1b4e3b4",  # 哈希盐7
 )
 
+# 搜索类型
+SEARCH_MODE: tuple = ("exact", "exclude", "fuzzy")
+
+# 周次定义
+class TIME_WEEK:
+    ODD: int = 1,  # 单周
+    EVEN: int = 2,  # 双周
+    OTHER: int = 3,  # 其他
+
+
 # 响应
 RESPONSE_400: dict = {
     "status": 400,
