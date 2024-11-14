@@ -46,6 +46,8 @@ class User(models.Model):
     用户表（总表）
 
     :id: 学号（用户唯一标识）（主键）
+    :nickname: 用户昵称
+    :avatar: 用户头像
     :favorite: 收藏课程
     :decided: 已选课程
     :curriculum: 培养方案（外键）
@@ -55,6 +57,8 @@ class User(models.Model):
     user_id = models.CharField(
         max_length=12, primary_key=True, unique=True, name="id"
     )  # 学号（用户唯一标识）（主键）
+    user_nickname = models.CharField(max_length=64, name="nickname")  # 用户昵称
+    user_avatar = models.ImageField(name="avatar", default="default_avater.png", upload_to="avatar/")  # 用户头像
 
     user_curriculum = models.ForeignKey(
         to=Curriculum, on_delete=models.DO_NOTHING, name="curriculum", null=True
@@ -147,8 +151,8 @@ class MainCourses(models.Model):
     code = models.CharField(max_length=16, name="code")  # 课程代码
     name = models.CharField(max_length=64, name="name")  # 课程名称
     teacher = models.CharField(max_length=32, name="teacher")  # 教师名称
-    credit = models.CharField(name="credit")  # 学分
-    period = models.CharField(name="period")  # 学时
+    credit = models.IntegerField(name="credit")  # 学分
+    period = models.IntegerField(name="period")  # 学时
     time = models.CharField(max_length=64, name="time")  # 开课时间
     department = models.CharField(max_length=64, name="department")  # 开课院系
     type_ = models.CharField(max_length=64, name="type")  # 课程类型
