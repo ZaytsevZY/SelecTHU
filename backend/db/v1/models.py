@@ -1,25 +1,65 @@
 from django.db import models
 
 
+# 培养方案表
+class Curriculum(models.Model):
+    """
+    培养方案表
+
+    :id: 培养方案的sha256值（主键）
+    :courses: 课程列表
+    """
+
+    # id_ = models.AutoField(primary_key=True, name="id")  # 自增id（主键）
+    _id = models.CharField(
+        primary_key=True, max_length=64, name="id"
+    )  # id（主键）（使用sha256）
+    # # 识别信息（专业、年级）
+    # major = models.CharField(max_length=20, name="major", null=True)  # 专业
+    # semester = models.IntegerField(name="semester", null=True)  # 学期
+
+    # 课程信息（列表）
+    courses = models.JSONField(name="courses")  # 课程列表
+    # 内部结构：
+    # {
+    #     key1: [
+    #         <course_code: str>,
+    #         ...
+    #     ],
+    #     key2: [
+    #         <course_code: str>,
+    #         ...
+    #     ],
+    #     key3: [
+    #         <course_code: str>,
+    #         ...
+    #     ],
+    # }
+
+    class Meta:
+        db_table = "curriculum"
+
+
 # 用户表（总表）
 class User(models.Model):
     """
     用户表（总表）
 
     :id: 学号（用户唯一标识）（主键）
-    :major: 专业
-    :session: 入学年份
     :favorite: 收藏课程
     :decided: 已选课程
+    :curriculum: 培养方案（外键）
     """
 
     # 个人基本信息
     user_id = models.CharField(
         max_length=12, primary_key=True, unique=True, name="id"
-    )  # 学号（用户唯一标识）（主键）（可能需要加密处理？）
-    user_major = models.CharField(max_length=20, name="major")  # 专业
-    user_session = models.IntegerField(name="session")  # 入学年份
-    #  semester?
+    )  # 学号（用户唯一标识）（主键）
+
+    user_curriculum = models.ForeignKey(
+        to=Curriculum, on_delete=models.DO_NOTHING, name="curriculum", null=True
+    )  # 培养方案
+
     # 课程信息（列表）
     user_favorite = models.JSONField(name="favorite")  # 收藏课程
     # 内部结构：
@@ -39,41 +79,6 @@ class User(models.Model):
 
     class Meta:
         db_table = "user"
-
-    def __str__(self):
-        return f"<{self.user_id}: {self.user_major}, {self.user_session}>"
-
-
-# 培养方案表
-class Curriculum(models.Model):
-    """
-    培养方案表
-
-    :id: 自增id（主键）
-    :major: 专业
-    :grade: 年级
-    :courses: 课程列表
-    """
-
-    id_ = models.AutoField(primary_key=True, name="id")  # 自增id（主键）
-
-    # 识别信息（专业、年级）
-    major = models.CharField(max_length=20, name="major")  # 专业
-    grade = models.IntegerField(name="grade")  # 年级
-
-    # 课程信息（列表）
-    courses = models.JSONField(name="courses")  # 课程列表
-    # 内部结构：
-    # [
-    #     <course_code: str>,
-    #     ...
-    # ]
-
-    class Meta:
-        db_table = "curriculum"
-
-    def __str__(self):
-        return f"<{self.major}, {self.grade}>"
 
 
 # 课程详细信息表
@@ -110,37 +115,7 @@ class CoursesDetails(models.Model):
     # ]
 
     class Meta:
-        abstract = True
-
-
-# 课程分表1
-class CoursesDetailsTable1(CoursesDetails):
-    class Meta:
-        db_table = "courses_details_table_1"
-
-
-# 课程分表2
-class CoursesDetailsTable2(CoursesDetails):
-    class Meta:
-        db_table = "courses_details_table_2"
-
-
-# 课程分表3
-class CoursesDetailsTable3(CoursesDetails):
-    class Meta:
-        db_table = "courses_details_table_3"
-
-
-# 课程分表4
-class CoursesDetailsTable4(CoursesDetails):
-    class Meta:
-        db_table = "courses_details_table_4"
-
-
-# 课程分表5
-class CoursesDetailsTable5(CoursesDetails):
-    class Meta:
-        db_table = "courses_details_table_5"
+        db_table = "courses_details"
 
 
 # 课程总表
@@ -151,6 +126,13 @@ class MainCourses(models.Model):
     :id: 课程识别码（主键）
     :code: 课程代码
     :name: 课程名称
+    :teacher: 教师名称
+    :credit: 学分
+    :period: 学时
+    :time: 开课时间
+    :department: 开课院系
+    :type: 课程类型
+    :selection: 选课情况
 
     TODO: 完善表结构
 
@@ -164,26 +146,32 @@ class MainCourses(models.Model):
     # 课程信息
     code = models.CharField(max_length=16, name="code")  # 课程代码
     name = models.CharField(max_length=64, name="name")  # 课程名称
+    teacher = models.CharField(max_length=32, name="teacher")  # 教师名称
+    credit = models.CharField(name="credit")  # 学分
+    period = models.CharField(name="period")  # 学时
+    time = models.CharField(max_length=64, name="time")  # 开课时间
+    department = models.CharField(max_length=64, name="department")  # 开课院系
+    type_ = models.CharField(max_length=64, name="type")  # 课程类型
+    selection = models.JSONField(name="selection")  # 选课情况
+    # 内部结构：
+    # {
+    #     "total": <total: int>,  # 总人数
+    #     "bx1": <b1: int>,  # 必选1志愿人数
+    #     "bx2": <b2: int>,  # 必选2志愿人数
+    #     "bx3": <b3: int>,  # 必选3志愿人数
+    #     "xx1": <x1: int>,  # 限选1志愿人数
+    #     "xx2": <x2: int>,  # 限选2志愿人数
+    #     "xx3": <x3: int>,  # 限选3志愿人数
+    #     "rx0": <r0: int>,  # 任选0志愿人数（特殊优先志愿）
+    #     "rx1": <r1: int>,  # 任选1志愿人数
+    #     "rx2": <r2: int>,  # 任选2志愿人数
+    #     "rx3": <r3: int>,  # 任选3志愿人数
+    # }
 
     # 详细信息指向表
-    link = models.IntegerField(name="link")  # 详细信息指向表（序号）
+    link = models.OneToOneField(
+        to=CoursesDetails, on_delete=models.CASCADE, name="link"
+    )  # 详细信息指向表
 
     class Meta:
         db_table = "main_courses"
-
-    def delete(self, using = ..., keep_parents = ...):
-        # 需要先删除详细信息表中的数据
-        link_mapping = {
-            1: CoursesDetailsTable1,
-            2: CoursesDetailsTable2,
-            3: CoursesDetailsTable3,
-            4: CoursesDetailsTable4,
-            5: CoursesDetailsTable5,
-        }
-        model_class = link_mapping.get(self.link, None)
-        if model_class:
-            model_class.objects.filter(id=self.id_).delete()
-        else:
-            raise ValueError("Invalid link value")
-        
-        return super().delete(using, keep_parents)
