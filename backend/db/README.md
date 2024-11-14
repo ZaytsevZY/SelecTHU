@@ -58,7 +58,7 @@ db
     - 错误码：
       - `400` : 参数错误
       - `404` : 未找到用户
-    - 说明: 查询用户信息。在返回值中， `avatar` 为用户头像链接的URL，详细说明见。
+    - 说明: 查询用户信息。在返回值中， `avatar` 为用户头像链接的URL，详细说明见 [头像字段说明](#avatar-explain) 。
 
 5. **查询课程列表**<span id="get_courses"></span>
     - 对应函数: `db_utils.get_courses`
