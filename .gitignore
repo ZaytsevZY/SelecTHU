@@ -11,4 +11,7 @@
 .vscode/
 __pycache__/
 migrations/
+.gitignore
 
+backend/db/
+frontend/
