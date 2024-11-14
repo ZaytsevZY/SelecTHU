@@ -2,11 +2,27 @@
 ## *注意：数据库部分模型和接口实现正在调整，以下接口列表暂不能作为最终使用判断！！！*
 ## 简要说明
 - 数据库使用 PostgreSQL 作为后端数据库，通过 Django ORM 进行操作。
+- 目录结构
+```
+db
+├── v1
+│   ├── __init__.py
+│   ├── apps.py
+│   ├── const.py
+│   ├── database.py
+│   ├── models.py
+│   ├── modifyDB.py
+│   ├── queryDB.py
+│   ├── tests.py
+|   └── utils.py
+├── __init__.py
+└── README.md
+```
 
 ## 接口列表
 ### v1版本
 - 使用方法：导入包 `import db.v1.utils as db_utils`
-  
+
 #### 数据库查询
 1. **查询数据库状态**<span id="db_status"></span>
     - 对应函数: `db_utils.db_status`
@@ -85,7 +101,7 @@
       - `500` : 多个课程匹配，内部错误
     - 说明: 查询课程详细信息。
 
-##### 数据库修改
+#### 数据库修改
 1. **添加用户**<span id="add_user"></span>
     - 对应函数: `db_utils.add_user`
     - 请求参数:
@@ -108,3 +124,6 @@
       - `409` : 培养方案已存在
       - `500` : 内部错误
     - 说明: 添加培养方案。
+
+#### 其他信息
+1. 更多常量定义见 [`const.py`](./v1/const.py)
