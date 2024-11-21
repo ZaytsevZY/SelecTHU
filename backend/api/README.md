@@ -54,8 +54,19 @@
       {
         "nickname": <str>, 
         "avatar": <str>,
-        "favorite": <list>, 
-        "decided": <list>,
+        "courses-favorite": [
+          <course_id:str>,
+          <course_id:str>,
+          ...
+        ],
+        "courses-decided": [
+          {
+            "course_id": <str>,
+            "type": <int>,
+            "level": <int>
+          },
+          ...
+        ],
         "curriculum": <dict>,
       },
     }
@@ -104,20 +115,20 @@
   - 返回值：`{"status": <int>, "curriculum": <list>,}`
   - 说明：获取用户培养方案
 
-3. **筛选获取课程**<span id="filter_courses"></span>
+3. **筛选获取课程**<span id="filter_courses"></span> **尚未最终确定**
   - 接口：`/api/v1/courses/`
   - 请求类型：`GET`
   - 请求参数：
-      -"course_id": <str>（可选）
-      -"code": <str>（可选）
-      -"name": <str>（可选）
-      -"teacher": <str>（可选）
-      -"credit": <int>（可选）
-      -"period": <int>（可选）
-      -"time": <dict>（可选）
-      -"department": <str>（可选）
-      -"type": <str>（可选）
-      -"search_mode": <str>（可选，在"exact"精确搜索, "fuzzy"模糊搜索, "exclude"排除搜索三选一，默认exact）
+      - "course_id": <str>（可选）
+      - "code": <str>（可选）
+      - "name": <str>（可选）
+      - "teacher": <str>（可选）
+      - "credit": <int>（可选）
+      - "period": <int>（可选）
+      - "time": <dict>（可选）
+      - "department": <str>（可选）
+      - "type": <str>（可选）
+      - "search_mode": <str>（可选，在"exact"精确搜索, "fuzzy"模糊搜索, "exclude"排除搜索三选一，默认exact）
   - 返回值：`{"status": <int>, "courses-main": <list>,}`
   - 说明：根据筛选条件返回所有符合条件课程的基本信息
 
@@ -126,7 +137,26 @@
   - 请求类型：`POST`
   - 请求参数：
     - `course_id<str>`：课程id
-  - 返回值：`{"status": <int>, "course-detail": <dict>,}`
+  - 返回值：（**尚未最终确定**）
+    ```json
+    {
+      "status": <int>,
+      "info": 
+      {
+        
+      },
+      "score": <float>,
+      "comments": 
+      [
+        {
+          "comment_time": <str>,
+          "comment_score": <int>,
+          "comment": <str>,
+        },
+        ...
+      ],
+    }
+    ```
   - 说明：获取指定id课程的详细信息
 
 5. **课程状态切换**<span id="change_course_condition"></span>
@@ -142,21 +172,46 @@
   - 接口：`/api/v1/courses-decided/<user_id>/`
   - 请求类型：`GET`
   - 请求参数：无
-  - 返回值：`{"status": <int>, "courses-decided": <list>,}`
+  - 返回值：
+    ```json
+    {
+      "status": <int>, 
+      "courses-decided": [
+        {
+          "course_id": <str>,
+          "type": <int>,
+          "level": <int>,
+        },
+        ...
+      ]
+    }
+    ```
   - 说明：获取用户的已选课程，可以用于逻辑判断和课表显示等
 
 7. **获取收藏课程**<span id="get_courses_favorite"></span>
   - 接口：`/api/v1/courses-favorite/<user_id>/`
   - 请求类型：`GET`
   - 请求参数：无
-  - 返回值：`{"status": <int>, "courses-favorite": <list>,}`
+  - 返回值：
+    ```json
+    {
+      "status": <int>, 
+      "courses-favorite": [
+        {
+          "course_id": <str>,
+          "type": <int>,
+        },
+        ...
+      ]
+    }
+    ```
   - 说明：获取用户的收藏课程
 
-8. **修改课程志愿**<span id="change_course_wish"></span>
+8. **修改课程志愿**<span id="change_course_level"></span>
   - 接口：`/api/v1/change-course-wish/<user_id>`
   - 请求类型：`POST`
   - 请求参数：无
-    - `wish<int>`：目标志愿顺序（1，2，3）
+    - `level<int>`：目标志愿顺序（1，2，3）
   - 返回值：`{"status": <int>,}`
   - 说明：修改用户指定课程的志愿，前端做好处理后再将结果传递给后端（比如前端将一个徽章从一门课移到另一门课，则发送两个修改课程志愿的请求）
 
@@ -175,26 +230,6 @@
       "department": <str>,
       "type": <str>,
       "selection": <dict>,
-    }
-    ```
-  - course_detail（用到的接口：/course-detail/）（**尚未最终确定**）
-    ```json
-    {
-      "course_id": <str>,
-      "info": 
-      {
-
-      },
-      "score": <float>,
-      "comments": 
-      [
-        {
-          "comment_time": <str>,
-          "comment_score": <int>,
-          "comment": <str>,
-        },
-        ...
-      ],
     }
     ```
 
@@ -218,19 +253,15 @@
   - curriculum（**尚未最终确定**）
     ```json
     {
-      "bx": [
+      "0": [
         <course_code: str>,
         ...
       ],
-      "xx": [
+      "1": [
         <course_code: str>,
         ...
       ],
-      "rx": [
-        <course_code: str>,
-        ...
-      ],
-      "cx": [
+      "2": [
         <course_code: str>,
         ...
       ],
