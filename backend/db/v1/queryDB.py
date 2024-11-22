@@ -1,3 +1,8 @@
+"""
+数据库查询模块
+定义并实现了数据库查询操作的接口
+"""
+
 from database import *
 
 
@@ -149,51 +154,53 @@ def get_course(
         return const.RESPONSE_400
     try:
         # 查询数据库
-        # 不返回link字段和id字段
-        course_list = None
+        # 先获取所有课程
+        course_list = models.MainCourses.objects.all()
         if search_mode == "exact" or search_mode == "fuzzy":
             if id_ is not None:
-                course_list = models.MainCourses.objects.filter(id=id_)
+                course_list = course_list.filter(id=id_)
             if code is not None:
-                course_list = models.MainCourses.objects.filter(code=code)
+                course_list = course_list.filter(code=code)
             if name is not None:
                 if search_mode == "exact":
-                    course_list = models.MainCourses.objects.filter(name=name)
+                    course_list = course_list.filter(name=name)
                 else:
-                    course_list = models.MainCourses.objects.filter(
-                        name__icontains="%".join(name)
-                    )
+                    # 模糊搜索，得到的搜索字符串形如"%n%a%m%e%"，得到的正则化结果形如".*n.*a.*m.*e.*"
+                    # 此处name为举例，实际为待搜索的字符串
+                    query_name = "%" + "%".join(name) + "%"
+                    course_list = course_list.filter(name__icontains=query_name)
             if teacher is not None:
-                course_list = models.MainCourses.objects.filter(teacher=teacher)
+                course_list = course_list.filter(teacher=teacher)
             if credit is not None:
-                course_list = models.MainCourses.objects.filter(credit=credit)
+                course_list = course_list.filter(credit=credit)
             if period is not None:
-                course_list = models.MainCourses.objects.filter(period=period)
+                course_list = course_list.filter(period=period)
             if department is not None:
-                course_list = models.MainCourses.objects.filter(department=department)
+                course_list = course_list.filter(department=department)
             if type_ is not None:
-                course_list = models.MainCourses.objects.filter(type=type_)
+                course_list = course_list.filter(type=type_)
         elif search_mode == "exclude":
             if id_ is not None:
-                course_list = models.MainCourses.objects.exclude(id=id_)
+                course_list = course_list.exclude(id=id_)
             if code is not None:
-                course_list = models.MainCourses.objects.exclude(code=code)
+                course_list = course_list.exclude(code=code)
             if name is not None:
-                course_list = models.MainCourses.objects.exclude(name=name)
+                course_list = course_list.exclude(name=name)
             if teacher is not None:
-                course_list = models.MainCourses.objects.exclude(teacher=teacher)
+                course_list = course_list.exclude(teacher=teacher)
             if credit is not None:
-                course_list = models.MainCourses.objects.exclude(credit=credit)
+                course_list = course_list.exclude(credit=credit)
             if period is not None:
-                course_list = models.MainCourses.objects.exclude(period=period)
+                course_list = course_list.exclude(period=period)
             if department is not None:
-                course_list = models.MainCourses.objects.exclude(department=department)
+                course_list = course_list.exclude(department=department)
             if type_ is not None:
-                course_list = models.MainCourses.objects.exclude(type=type_)
+                course_list = course_list.exclude(type=type_)
 
         if course_list.exists() is False:
             return {"status": 200, "course": []}
 
+        # 不返回link字段和id字段
         course_list = course_list.values(
             "code",
             "name",
@@ -237,28 +244,36 @@ def get_course(
 
 
 # 查询课程详细信息
-def get_course_detail(id_: str):
+def get_course_detail(code: str, name: str, teacher: str):
     """
     查询课程详细信息
 
-    :param `id_`: 课程识别码
+    :param `code`: 课程号
+    :param `name`: 课程名
+    :param `teacher`: 教师名
 
     :return: 返回的信息（包含 详细信息 `details<type = dict>` ）
     """
     try:
-        if id_ is None:
+        if code is None or name is None or teacher is None:
             return const.RESPONSE_400
+        
+        id_ = calculate_course_id(code, name, teacher)
         # 查询数据库
-        course = models.MainCourses.objects.get(id=id_)
+        course = (
+            models.CoursesDetails.objects.filter(id=id_)
+            .values("info", "score", "comments")
+        )
 
-        if course is None:
+        # 课程不存在
+        if course.exists() is False:
             return const.RESPONSE_404
 
-        details = {
-            "info": course.link.info,
-            "score": course.link.score,
-            "comments": course.link.comments,
-        }
+        # 如果有多个结果，说明发生错误
+        if course.count() > 1:
+            return const.RESPONSE_500
+        
+        details = course.first()
 
         return {"status": 200, "details": details}
     except:

@@ -1,3 +1,8 @@
+"""
+表结构定义
+定义了数据库表的结构，包括培养方案表、用户表、课程详细信息表、课程总表
+"""
+
 from django.db import models
 
 
@@ -76,7 +81,7 @@ class User(models.Model):
     # [
     #     {
     #        course_id: <course_id: str>,
-    #        level: <level: int>
+    #        selection_type: <selection_type: str>
     #     },
     #     ...
     # ]
