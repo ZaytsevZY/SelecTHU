@@ -14,9 +14,9 @@ import {
   IconButton,
   useColorModeValue,
   Badge,
-  chakra, // Import chakra
+  chakra,
 } from "@chakra-ui/react";
-import { DeleteIcon } from "@chakra-ui/icons";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { Course, TimeSlot } from "@/app/types/course";
 import { useMemo } from "react";
 
@@ -30,9 +30,11 @@ const ItemTypes = {
 
 interface CourseListProps {
   availableCourses: Course[];
+  addCourse: (course: Course) => void;
+  deleteCourse: (courseId: string) => void;
 }
 
-export default function CourseList({ availableCourses }: CourseListProps) {
+export default function CourseList({ availableCourses, addCourse, deleteCourse }: CourseListProps) {
   const bgColor = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.700");
 
@@ -70,9 +72,14 @@ export default function CourseList({ availableCourses }: CourseListProps) {
       .join(", ");
   };
 
+  // 处理添加课程的函数
+  const handleAdd = (course: Course) => {
+    addCourse(course);
+  };
+
+  // 处理删除课程的函数
   const handleDelete = (courseId: string) => {
-    // 实现删除课程的逻辑
-    console.log("删除课程:", courseId);
+    deleteCourse(courseId);
   };
 
   return (
@@ -143,6 +150,17 @@ export default function CourseList({ availableCourses }: CourseListProps) {
                 <Td isNumeric>{course.credits}</Td>
                 <Td>{formatTimeSlots(course.timeSlots)}</Td>
                 <Td>
+                  {/* 添加“添加”按钮 */}
+                  <IconButton
+                    aria-label="添加课程"
+                    icon={<AddIcon />}
+                    size="sm"
+                    variant="ghost"
+                    colorScheme="green"
+                    onClick={() => handleAdd(course)}
+                    mr={2}
+                  />
+                  {/* 添加“删除”按钮 */}
                   <IconButton
                     aria-label="删除课程"
                     icon={<DeleteIcon />}
