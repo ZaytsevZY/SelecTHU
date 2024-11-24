@@ -55,15 +55,15 @@
         "nickname": <str>, 
         "avatar": <str>,
         "courses-favorite": [
-          <course_id:str>,
-          <course_id:str>,
+          {
+            "course_id": <str>,
+            "selection-type": <str>,
+          },
           ...
         ],
         "courses-decided": [
           {
             "course_id": <str>,
-            "type": <int>,
-            "level": <int>
           },
           ...
         ],
@@ -179,8 +179,7 @@
       "courses-decided": [
         {
           "course_id": <str>,
-          "type": <int>,
-          "level": <int>,
+          "selection-type": <str>,
         },
         ...
       ]
@@ -199,7 +198,6 @@
       "courses-favorite": [
         {
           "course_id": <str>,
-          "type": <int>,
         },
         ...
       ]
@@ -211,7 +209,7 @@
   - 接口：`/api/v1/change-course-wish/<user_id>`
   - 请求类型：`POST`
   - 请求参数：无
-    - `level<int>`：目标志愿顺序（1，2，3）
+    - `level<int>`：目标志愿（1,2,3）
   - 返回值：`{"status": <int>,}`
   - 说明：修改用户指定课程的志愿，前端做好处理后再将结果传递给后端（比如前端将一个徽章从一门课移到另一门课，则发送两个修改课程志愿的请求）
 
