@@ -136,7 +136,6 @@ def filter_courses(request):
     """
     筛选课程
     """
-    #TODO：<db>，修改get_course函数，需要返回course_id
     filters = {
         "code": request.query_params.get("code", None),
         "name": request.query_params.get("name", None),
@@ -162,7 +161,6 @@ def get_course_detail(request, course_id):
     """
     查询课程信息
     """
-    #TODO：<db>，修改get_course_detail函数，或者增加一个函数get_course_detail_by_id
     course = db_utils.get_course_detail_by_id(course_id)
     if not course:
         return Response({"status": 404, "message": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
