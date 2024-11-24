@@ -1,28 +1,45 @@
-# 保存一些可能用到的常量
-# v1
+"""
+常量定义
+定义了会在其他函数中使用的常量
+v1版本
+"""
+
+from app.settings import BASE_DIR
+
+import dotenv
+import os
+
+
+dotenv.load_dotenv(BASE_DIR / ".env")
 
 # 培养方案键值（对应必限任）
 CURRICULUM_KEYS: tuple = ("0", "1", "2")
 
 # 哈希盐字符串
-SALT: tuple = (
-    "c4d038b4bed09fdb1471ef51ec3a32cd",  # 哈希盐1
-    "84402604c73b70e552b4a109f656a4be",  # 哈希盐2
-    "32150285b345c48aa3492f9212f61ca2",  # 哈希盐3
-    "699226c443e0b2430dc029f67857f3c5",  # 哈希盐4
-    "4823764668c7d7039deffd751473939c",  # 哈希盐5
-    "cca2881c09f67c0817667ca13581c022",  # 哈希盐6
-    "f7d0b4c7d6c4d5e2b8e5b7e3f1b4e3b4",  # 哈希盐7
-)
+# 放入.env文件中
+# 11.22迭代：将SALT放入.env文件中并动态加载
+_SALT_COUNT = int(os.getenv("SALT_COUNT", 7))
+SALT: tuple = tuple(os.getenv(f"SALT_{i}", "") for i in range(1, _SALT_COUNT + 1))
 
 # 搜索类型
 SEARCH_MODE: tuple = ("exact", "exclude", "fuzzy")
 
 # 周次定义
 class TIME_WEEK:
-    ODD: int = 1,  # 单周
-    EVEN: int = 2,  # 双周
-    OTHER: int = 3,  # 其他
+    ODD: int = (1,)  # 单周
+    EVEN: int = (2,)  # 双周
+    OTHER: int = (3,)  # 其他
+
+
+# 志愿类型定义
+# 一个完整的志愿应该是两位字符串，第一位为志愿类型，第二位为志愿级别
+# 如：b0、x1、r2、t3
+class SELECTION_TYPE:
+    ST_B: str = ("b",)  # 必修
+    ST_X: str = ("x",)  # 限选
+    ST_R: str = ("r",)  # 任选
+    ST_T: str = ("t",)  # 体育
+    LEVEL: tuple = ("0", "1", "2", "3")  # 志愿级别
 
 
 # 响应
