@@ -1,4 +1,3 @@
-// components/main/CourseRow.tsx
 import React, { useRef, useEffect } from "react";
 import {
   Td,
@@ -9,7 +8,7 @@ import {
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { Course, TimeSlot } from "@/app/types/course";
 
-import { useDrag } from "react-dnd";
+import { useDrag, DragSourceMonitor } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
 
 const ItemTypes = {
@@ -32,13 +31,13 @@ export default function CourseRow({
   handleDelete,
 }: CourseRowProps) {
   // 使用 useDrag 钩子
-  const [{ isDragging }, drag, preview] = useDrag(() => ({
+  const [{ isDragging }, drag, preview] = useDrag({
     type: ItemTypes.COURSE,
     item: { course },
-    collect: (monitor) => ({
+    collect: (monitor: DragSourceMonitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  }), [course]);
+  });
 
   // 抑制默认的拖拽预览
   useEffect(() => {
@@ -57,11 +56,10 @@ export default function CourseRow({
     >
       <Td>
         <Badge
-          colorScheme="teal"
+          colorScheme={courseColor} // 使用传递的颜色方案
           px={2}
           py={1}
           borderRadius="md"
-          bg={courseColor}
           color="white"
         >
           {course.name}

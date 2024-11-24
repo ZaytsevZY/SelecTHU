@@ -1,4 +1,3 @@
-// components/main/CourseList.tsx
 import React, { useRef } from "react";
 import {
   Box,
@@ -54,8 +53,31 @@ export default function CourseList({
   // 将 drop 连接到 DOM 引用上
   drop(boxRef);
 
-  // 备选课程颜色
-  const courseColor = "teal";
+  // 颜色数组
+  const colors = [
+    "blue",
+    "green",
+    "red",
+    "yellow",
+    "purple",
+    "teal",
+    "orange",
+    "pink",
+    "cyan",
+    "gray",
+  ];
+
+  // 创建一个颜色映射对象
+  const courseColorMap: { [courseId: string]: string } = {};
+
+  // 获取课程的颜色，如果未分配则分配一个新颜色
+  const getCourseColor = (courseId: string): string => {
+    if (!courseColorMap[courseId]) {
+      const colorIndex = Object.keys(courseColorMap).length % colors.length;
+      courseColorMap[courseId] = colors[colorIndex];
+    }
+    return courseColorMap[courseId];
+  };
 
   // 格式化时间段
   const formatTimeSlots = (timeSlots: any[]) => {
@@ -93,7 +115,7 @@ export default function CourseList({
             <CourseRow
               key={course.id}
               course={course}
-              courseColor={courseColor}
+              courseColor={getCourseColor(course.id)} // 为每个课程获取颜色
               formatTimeSlots={formatTimeSlots}
               handleAdd={addCourseToTable}
               handleDelete={deleteCourse}
