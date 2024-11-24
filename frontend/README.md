@@ -15,6 +15,7 @@ frontend/
 │   │   │   ├── main/
 │   │   │   │   ├── CourseTable.tsx      // 课程表组件
 │   │   │   │   ├── CourseSelection.tsx      // 管理课程状态组件
+│   │   │   │   ├── CustomDragLayer.tsx      // 管理拖拽组件
 │   │   │   │   ├── CourseRow.tsx      // hook管理组件
 │   │   │   │   ├── StatusCard.tsx       // 状态卡片组件（志愿分配和选课阶段）
 │   │   │   │   ├── TeachingPlan.tsx     // main界面右侧教学计划组件
@@ -65,6 +66,7 @@ frontend/
 - 完善搜索课程界面
 - 美化卡片
 - 完善卡片拖拽操作，购物车拖拽操作，购物车一件添加；优化冲突逻辑
+- 列表课程的左键单击操作（详细信息，删除课程等）
 - 优化navbar左上角；绘制或制作软件图标
 - 志愿分配操作
 - 备选清单增添和修改

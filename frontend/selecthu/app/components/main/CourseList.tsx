@@ -1,6 +1,5 @@
 // components/main/CourseList.tsx
-
-import React from "react";
+import React, { useRef } from "react";
 import {
   Box,
   Table,
@@ -8,98 +7,84 @@ import {
   Tbody,
   Tr,
   Th,
-  Text,
-  Flex,
-  Link,
   useColorModeValue,
+  chakra,
 } from "@chakra-ui/react";
+import { Course } from "@/app/types/course";
+import CourseRow from "./CourseRow";
 
-import { Course, TimeSlot } from "@/app/types/course";
-import { useMemo } from "react";
+// 引入 React DnD 所需的模块
+import { useDrop } from "react-dnd";
 
-import CourseRow from "./CourseRow"; // Import the new component
+// 定义拖拽类型
+const ItemTypes = {
+  COURSE: "course",
+};
 
 interface CourseListProps {
   availableCourses: Course[];
   addCourseToTable: (course: Course) => void;
   deleteCourse: (courseId: string) => void;
+  moveCourseToAvailable: (course: Course) => void;
 }
 
 export default function CourseList({
   availableCourses,
   addCourseToTable,
   deleteCourse,
+  moveCourseToAvailable,
 }: CourseListProps) {
-  const bgColor = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.700");
+  const tableBgColor = useColorModeValue("white", "gray.800");
 
-  // Colors for courses
-  const colors = [
-    "blue.500",
-    "green.500",
-    "red.500",
-    "yellow.500",
-    "purple.500",
-    "teal.500",
-    "orange.500",
-    "pink.500",
-    "cyan.500",
-    "gray.500",
-  ];
+  // 使用 useRef 创建一个引用
+  const boxRef = useRef<HTMLDivElement>(null);
 
-  // Map course IDs to colors
-  const courseColorMap = useMemo(() => {
-    const map: { [courseId: string]: string } = {};
-    availableCourses.forEach((course, index) => {
-      map[course.id] = colors[index % colors.length];
-    });
-    return map;
-  }, [availableCourses]);
+  // 使用 useDrop，使备选清单成为拖拽放置目标
+  const [{ isOver }, drop] = useDrop({
+    accept: ItemTypes.COURSE,
+    drop: (item: { course: Course }) => {
+      moveCourseToAvailable(item.course);
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  });
 
-  const formatTimeSlots = (timeSlots: TimeSlot[]): string => {
-    const weekDays = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+  // 将 drop 连接到 DOM 引用上
+  drop(boxRef);
+
+  // 备选课程颜色
+  const courseColor = "teal";
+
+  // 格式化时间段
+  const formatTimeSlots = (timeSlots: any[]) => {
     return timeSlots
-      .map(
-        (ts) =>
-          `${weekDays[ts.day - 1]} ${ts.start}-${ts.start + ts.duration - 1}节`
-      )
+      .map((ts) => `周${ts.day} ${ts.start}-${ts.start + ts.duration - 1}节`)
       .join(", ");
-  };
-
-  const handleAdd = (course: Course) => {
-    addCourseToTable(course);
-  };
-
-  const handleDelete = (courseId: string) => {
-    deleteCourse(courseId);
   };
 
   return (
     <Box
-      bg={bgColor}
-      p={4}
+      ref={boxRef} // 使用 boxRef
+      bg={isOver ? "blue.100" : tableBgColor}
+      p={2}
       borderRadius="lg"
       shadow="sm"
       border="1px"
       borderColor={borderColor}
     >
-      <Flex justifyContent="space-between" alignItems="center" mb={4}>
-        <Text fontSize="lg" fontWeight="bold">
-          备选清单
-        </Text>
-        <Link fontSize="sm" color="brand.500">
-          查看
-        </Link>
-      </Flex>
-
+      <chakra.h2 fontSize="lg" mb={2}>
+        备选清单
+      </chakra.h2>
       <Table size="sm" variant="simple">
         <Thead>
           <Tr>
             <Th>课程名</Th>
-            <Th>授课教师</Th>
-            <Th>课程属性</Th>
-            <Th isNumeric>学分数</Th>
-            <Th>上课时间</Th>
+            <Th>教师</Th>
+            <Th>类型</Th>
+            <Th isNumeric>学分</Th>
+            <Th>时间段</Th>
             <Th>操作</Th>
           </Tr>
         </Thead>
@@ -108,10 +93,10 @@ export default function CourseList({
             <CourseRow
               key={course.id}
               course={course}
-              courseColor={courseColorMap[course.id]}
+              courseColor={courseColor}
               formatTimeSlots={formatTimeSlots}
-              handleAdd={handleAdd}
-              handleDelete={handleDelete}
+              handleAdd={addCourseToTable}
+              handleDelete={deleteCourse}
             />
           ))}
         </Tbody>

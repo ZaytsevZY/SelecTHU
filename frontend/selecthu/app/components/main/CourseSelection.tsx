@@ -1,5 +1,4 @@
 // components/main/CourseSelection.tsx
-
 import React, { useState } from 'react';
 import { Course } from "@/app/types/course";
 import CourseList from './CourseList';
@@ -34,24 +33,33 @@ export default function CourseSelection() {
     );
   };
 
-  // 从课表中删除课程（如果需要）
-  const deleteCourseFromTable = (courseId: string) => {
+  // 从课表中删除课程
+  const moveCourseToAvailable = (course: Course) => {
+    // 从已选课程中删除
     setSelectedCourses(prevSelectedCourses =>
-      prevSelectedCourses.filter(c => c.id !== courseId)
+      prevSelectedCourses.filter(c => c.id !== course.id)
     );
+
+    // 添加回备选清单（如果尚未存在）
+    setAvailableCourses(prevAvailableCourses => {
+      if (!prevAvailableCourses.some((c) => c.id === course.id)) {
+        return [...prevAvailableCourses, course];
+      }
+      return prevAvailableCourses;
+    });
   };
 
   return (
     <>
       <CourseList
         availableCourses={availableCourses}
-        addCourseToTable={addCourseToTable} // Changed here
+        addCourseToTable={addCourseToTable}
         deleteCourse={removeCourseFromAvailable}
+        moveCourseToAvailable={moveCourseToAvailable} // 添加此行
       />
       <CourseTable
         selectedCourses={selectedCourses}
         addCourseToTable={addCourseToTable}
-        // removeCourseFromTable={deleteCourseFromTable}
       />
     </>
   );

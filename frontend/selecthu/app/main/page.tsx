@@ -13,6 +13,9 @@ import CourseList from "../components/main/CourseList";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
+// 引入自定义拖拽层
+import CustomDragLayer from "../components/main/CustomDragLayer";
+
 import { Course } from "../types/course";
 
 // 示例课程数据
@@ -76,9 +79,26 @@ export default function MainPage() {
     );
   };
 
+  // 将课程从已选课程移动到备选清单
+  const moveCourseToAvailable = (course: Course) => {
+    // 从已选课程中删除
+    setSelectedCourses((prevSelectedCourses) =>
+      prevSelectedCourses.filter((c) => c.id !== course.id)
+    );
+
+    // 添加回备选清单（如果尚未存在）
+    setAvailableCourses((prevAvailableCourses) => {
+      if (!prevAvailableCourses.some((c) => c.id === course.id)) {
+        return [...prevAvailableCourses, course];
+      }
+      return prevAvailableCourses;
+    });
+  };
+
   return (
     // 将整个应用包裹在 DndProvider 中，启用拖拽功能
     <DndProvider backend={HTML5Backend}>
+      <CustomDragLayer /> {/* 添加自定义拖拽层 */}
       <Box minH="100vh" bg={useColorModeValue("gray.50", "gray.900")}>
         <Navbar />
 
@@ -109,8 +129,9 @@ export default function MainPage() {
                 <TeachingPlan />
                 <CourseList
                   availableCourses={availableCourses}
-                  addCourseToTable={addCourseToTable} // 传递添加课程的方法
-                  deleteCourse={deleteCourse} // 传递删除课程的方法
+                  addCourseToTable={addCourseToTable}
+                  deleteCourse={deleteCourse}
+                  moveCourseToAvailable={moveCourseToAvailable} // 传递移动课程的方法
                 />
               </Grid>
             </GridItem>

@@ -7,11 +7,12 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true, // 添加此行
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node", // 修改此行
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx", // 修改此行，如果使用 React 17 及以上
     "incremental": true,
     "plugins": [
       {

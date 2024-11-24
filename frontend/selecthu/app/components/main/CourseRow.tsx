@@ -1,6 +1,5 @@
 // components/main/CourseRow.tsx
-
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import {
   Td,
   Badge,
@@ -11,6 +10,7 @@ import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { Course, TimeSlot } from "@/app/types/course";
 
 import { useDrag } from "react-dnd";
+import { getEmptyImage } from "react-dnd-html5-backend";
 
 const ItemTypes = {
   COURSE: "course",
@@ -31,16 +31,21 @@ export default function CourseRow({
   handleAdd,
   handleDelete,
 }: CourseRowProps) {
-  // Use the useDrag Hook
-  const [{ isDragging }, drag] = useDrag({
+  // 使用 useDrag 钩子
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: ItemTypes.COURSE,
     item: { course },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  });
+  }), [course]);
 
-  const rowRef = React.useRef<HTMLTableRowElement>(null);
+  // 抑制默认的拖拽预览
+  useEffect(() => {
+    preview(getEmptyImage(), { captureDraggingState: true });
+  }, [preview]);
+
+  const rowRef = useRef<HTMLTableRowElement>(null);
   drag(rowRef);
 
   return (
@@ -67,7 +72,7 @@ export default function CourseRow({
       <Td isNumeric>{course.credits}</Td>
       <Td>{formatTimeSlots(course.timeSlots)}</Td>
       <Td>
-        {/* Add and Delete buttons */}
+        {/* 添加和删除按钮 */}
         <IconButton
           aria-label="添加课程"
           icon={<AddIcon />}

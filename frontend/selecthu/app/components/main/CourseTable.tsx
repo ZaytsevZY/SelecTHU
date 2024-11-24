@@ -1,5 +1,5 @@
 // components/main/CourseTable.tsx
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Table,
   Thead,
@@ -9,13 +9,14 @@ import {
   Td,
   Text,
   useColorModeValue,
-  chakra, // Import chakra
+  chakra,
   Box,
 } from "@chakra-ui/react";
 import { Course } from "@/app/types/course";
 
 // 引入 React DnD 所需的模块
-import { useDrop } from "react-dnd";
+import { useDrop, useDrag } from "react-dnd";
+import { getEmptyImage } from "react-dnd-html5-backend";
 
 // 定义拖拽类型
 const ItemTypes = {
@@ -130,7 +131,7 @@ export default function CourseTable({
 
   return (
     <chakra.div
-      ref={boxRef} // 将 ref 绑定到 chakra.div
+      ref={boxRef}
       bg={bgColor}
       p={2}
       borderRadius="lg"
@@ -175,12 +176,12 @@ export default function CourseTable({
 
                 const course = getCourse(dayIndex + 1, slotIndex + 1);
                 const rowSpan = getRowSpan(dayIndex + 1, slotIndex + 1);
-                const color = course ? getCourseColor(course.id) : undefined;
+                const color = course ? getCourseColor(course.id) : "gray.200";
 
                 return (
                   <Td
                     key={`cell-${dayIndex}-${slotIndex}`}
-                    p={0} // 设置为0，防止内边距影响高度
+                    p={0}
                     rowSpan={rowSpan}
                     textAlign="center"
                     border="1px solid"
@@ -188,21 +189,7 @@ export default function CourseTable({
                     verticalAlign="middle"
                   >
                     {course && shouldShowCourse(dayIndex + 1, slotIndex + 1) ? (
-                      <Box
-                        p={2}
-                        bg={color}
-                        borderRadius="none" // 移除圆角，确保跨行时边框对齐
-                        height="100%"
-                        width="100%"
-                        fontSize="xs"
-                        display="flex"
-                        flexDirection="column"
-                        justifyContent="center"
-                      >
-                        <Text fontWeight="bold">{course.name}</Text>
-                        <Text>{course.teacher}</Text>
-                        <Text>{course.classroom}</Text>
-                      </Box>
+                      <CourseBlock course={course} color={color} />
                     ) : null}
                   </Td>
                 );
@@ -212,5 +199,51 @@ export default function CourseTable({
         </Tbody>
       </Table>
     </chakra.div>
+  );
+}
+
+// 课程块组件
+interface CourseBlockProps {
+  course: Course;
+  color: string;
+}
+
+function CourseBlock({ course, color }: CourseBlockProps) {
+  // 使用 useDrag 钩子
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
+    type: ItemTypes.COURSE,
+    item: { course },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }), [course]);
+
+  // 抑制默认的拖拽预览
+  useEffect(() => {
+    preview(getEmptyImage(), { captureDraggingState: true });
+  }, [preview]);
+
+  // 创建一个 ref
+  const boxRef = useRef<HTMLDivElement>(null);
+  drag(boxRef);
+
+  return (
+    <Box
+      ref={boxRef}
+      p={2}
+      bg={color}
+      borderRadius="none"
+      height="100%"
+      width="100%"
+      fontSize="xs"
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      opacity={isDragging ? 0 : 1} // 拖拽时隐藏原课程块
+    >
+      <Text fontWeight="bold">{course.name}</Text>
+      <Text>{course.teacher}</Text>
+      <Text>{course.classroom}</Text>
+    </Box>
   );
 }
