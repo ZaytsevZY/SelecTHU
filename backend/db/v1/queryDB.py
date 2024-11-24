@@ -104,6 +104,7 @@ def get_courses():
     """
     # 查询数据库
     courses = models.MainCourses.objects.all().values(
+        "id",
         "code",
         "name",
         "teacher",
@@ -167,7 +168,7 @@ def get_course(
                 else:
                     # 模糊搜索，得到的搜索字符串形如"%n%a%m%e%"，得到的正则化结果形如".*n.*a.*m.*e.*"
                     # 此处name为举例，实际为待搜索的字符串
-                    query_name = "%" + "%".join(name) + "%"
+                    query_name = "%".join(name)
                     course_list = course_list.filter(name__icontains=query_name)
             if teacher is not None:
                 course_list = course_list.filter(teacher=teacher)
@@ -202,6 +203,7 @@ def get_course(
 
         # 不返回link字段和id字段
         course_list = course_list.values(
+            "id",
             "code",
             "name",
             "teacher",
@@ -243,8 +245,8 @@ def get_course(
         return const.RESPONSE_500
 
 
-# 查询课程详细信息
-def get_course_detail(code: str, name: str, teacher: str):
+# 查询课程详细信息（通过课程信息）
+def get_course_detail_by_info(code: str, name: str, teacher: str):
     """
     查询课程详细信息
 
@@ -262,7 +264,7 @@ def get_course_detail(code: str, name: str, teacher: str):
         # 查询数据库
         course = (
             models.CoursesDetails.objects.filter(id=id_)
-            .values("info", "score", "comments")
+            .values("id", "info", "score", "comments")
         )
 
         # 课程不存在
@@ -273,6 +275,39 @@ def get_course_detail(code: str, name: str, teacher: str):
         if course.count() > 1:
             return const.RESPONSE_500
         
+        details = course.first()
+
+        return {"status": 200, "details": details}
+    except:
+        return const.RESPONSE_500
+
+
+# 查询课程详细信息（通过课程id）
+def get_course_detail_by_id(id_: str):
+    """
+    查询课程详细信息
+
+    :param `id_`: 课程id
+    :return: 返回的信息（包含 详细信息 `details<type = dict>` ）
+    """
+    try:
+        if id_ is None:
+            return const.RESPONSE_400
+
+        # 查询数据库
+        course = (
+            models.CoursesDetails.objects.filter(id=id_)
+            .values("id", "info", "score", "comments")
+        )
+
+        # 课程不存在
+        if course.exists() is False:
+            return const.RESPONSE_404
+
+        # 如果有多个结果，说明发生错误
+        if course.count() > 1:
+            return const.RESPONSE_500
+
         details = course.first()
 
         return {"status": 200, "details": details}
