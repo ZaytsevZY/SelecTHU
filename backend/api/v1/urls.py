@@ -20,5 +20,5 @@ urlpatterns = [
     path('modify-course-condition/<str:user_id>', views.modify_course_condition, name='modify_course_condition'),  # 选中/备选/不选状态切换
     path('courses-decided/<str:user_id>/', views.get_courses_decided, name='get_course_decided'),  # 获取已选课程
     path('courses-favorite/<str:user_id>/', views.get_courses_favorite, name='get_course_favorite'),  # 获取收藏课程
-    path('modify-course-level/<str:user_id>/', views.modify_course_level, name='modify_course_level'),  # 修改课程志愿
+    path('modify-course-selection-type/<str:user_id>/', views.modify_course_selection_type, name='modify_course_selection_type'),  # 修改课程志愿
 ]

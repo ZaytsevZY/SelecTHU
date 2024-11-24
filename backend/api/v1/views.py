@@ -125,7 +125,7 @@ def get_curriculum(request, user_id):
     """
     查询培养方案
     """
-    ##TODO：确定培养方案的用法
+    #TODO：确定培养方案的用法
     return Response({
         "status": 200,
     }, status=status.HTTP_200_OK)
@@ -138,7 +138,6 @@ def filter_courses(request):
     """
     #TODO：<db>，修改get_course函数，需要返回course_id
     filters = {
-        "course_id": request.query_params.get("course_id", None),
         "code": request.query_params.get("code", None),
         "name": request.query_params.get("name", None),
         "teacher": request.query_params.get("teacher", None),
@@ -150,7 +149,7 @@ def filter_courses(request):
         "search_mode": request.query_params.get("search_mode", "exact"),
     }
 
-    courses = db_utils.get_course(filters)  # 假设db_utils有相关的筛选函数
+    courses = db_utils.get_course(filters)
 
     return Response({
         "status": 200,
@@ -163,7 +162,8 @@ def get_course_detail(request, course_id):
     """
     查询课程信息
     """
-    course = db_utils.get_course_detail(course_id)
+    #TODO：<db>，修改get_course_detail函数，或者增加一个函数get_course_detail_by_id
+    course = db_utils.get_course_detail_by_id(course_id)
     if not course:
         return Response({"status": 404, "message": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -182,18 +182,45 @@ def modify_course_condition(request, user_id):
     """
     修改课程状态
     """
-    #TODO：db增加接口
+    #TODO：<db>，增加接口add_course_to_decided, add_course_to_favorite, remove_course_from_decided, remove_course_from_favorite
     course_id = request.data.get("course_id")
     cond = request.data.get("cond")
 
     if cond not in ["decided", "favorite", "dismiss"]:
         return Response({"status": 400, "message": "Invalid condition"}, status=status.HTTP_400_BAD_REQUEST)
 
-    #TODO：这个地方还是很复杂的，要改
-    success = db_utils.change_course_condition(user_id, course_id, cond)
+    user = db_utils.get_user(user_id)
+    if not user:
+        return Response({"status": 404, "message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    if course_id in user.decided:
+        prev_cond = "decided"
+    elif course_id in user.favorite:
+        prev_cond = "favorite"
+    else:
+        prev_cond = "dismiss"
+    
+    success = True
+    if cond == "dismiss":
+        if prev_cond == "decided":
+            success = db_utils.remove_course_from_decided(user_id, course_id)
+        elif prev_cond == "favorite":
+            success = db_utils.remove_course_from_favorite(user_id, course_id)
+    elif cond == "favorite":
+        if prev_cond == "decided":
+            success = db_utils.remove_course_from_decided(user_id, course_id)
+            success = db_utils.add_course_to_favorite(user_id, course_id) and success
+        elif prev_cond == "dismiss":
+            success = db_utils.add_course_to_favorite(user_id, course_id)
+    else:
+        if prev_cond == "favorite":
+            success = db_utils.remove_course_from_favorite(user_id, course_id)
+            success = db_utils.add_course_to_decided(user_id, course_id) and success
+        elif prev_cond == "dismiss":
+            success = db_utils.add_course_to_decided(user_id, course_id)
+    
     if not success:
-        return Response({"status": 404, "message": "Course not found or error in status change"}, status=status.HTTP_404_NOT_FOUND)
-
+        return Response({"status": 404, "message": "Course not found or error in condition change"}, status=status.HTTP_404_NOT_FOUND)
     return Response({"status": 200}, status=status.HTTP_200_OK)
 
 @api_view(["GET"])
@@ -237,10 +264,19 @@ def get_courses_favorite(request, user_id):
 
 @api_view(["POST"])
 @login_required
-def modify_course_level(request, user_id):
+def modify_course_selection_type(request, user_id):
     """
     修改课程志愿
     """
-    #TODO：<db修改>增加接口
+    #TODO：<db修改>增加change_course_level接口
     course_id = request.data.get("course_id")
     selection_type = request.data.get("selection_type")
+    user = db_utils.get_user(user_id)
+    if not user:
+        return Response({"status": 404, "message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    if selection_type not in ["decided", "favorite", "dismiss"]:
+        return Response({"status": 400, "message": "Invalid selection type"}, status=status.HTTP_400_BAD_REQUEST)
+    success = db_utils.change_course_level(user_id, course_id, selection_type)
+    if not success:
+        return Response({"status": 404, "message": "Course not found or error in selection type change"}, status=status.HTTP_404_NOT_FOUND)
+    return Response({"status": 200}, status=status.HTTP_200_OK)
