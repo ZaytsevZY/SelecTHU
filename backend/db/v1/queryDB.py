@@ -14,7 +14,7 @@ def db_status():
     return {"status": 200, "msg": "connect successfully"}
 
 
-# 查询培养方案
+# 查询用户培养方案
 def get_curriculum(id_: str):
     """
     查询培养方案
@@ -26,14 +26,22 @@ def get_curriculum(id_: str):
     # 检查输入合法性
     if id_ is None:
         return const.RESPONSE_400
+    try:
+        # 查询
+        user = models.User.objects.get(user_id=id_)
+        if not user:
+            return const.RESPONSE_404
+        curriculum = {}
+        if user.user_curriculum:
+            user_curriculum_id = user.user_curriculum
+            user_curriculum = models.Curriculum.objects.filter(id=user_curriculum_id).values("courses")
+            if user_curriculum.exists():
+                curriculum = user_curriculum.first()
 
-    # 查询
-    user = models.User.objects.filter(user_id=id_).first()
-    if not user:
-        return const.RESPONSE_404
-
-    # 返回结果
-    return {"status": 200, "curriculum": user.user_curriculum.courses}
+        # 返回结果
+        return {"status": 200, "curriculum": curriculum}
+    except Exception as e:
+        return const.RESPONSE_500
 
 
 # 查询培养方案是否存在
@@ -77,22 +85,30 @@ def get_user(id_: str):
     # 检查输入合法性
     if id_ is None:
         return const.RESPONSE_400
-
-    # 查询
-    user = models.User.objects.filter(user_id=id_).first()
-    if not user:
-        return const.RESPONSE_404
-    avatar_url = user.user_avatar.url
-    curriculum = user.user_curriculum.courses if user.user_curriculum else None
-    # 返回结果
-    return {
-        "status": 200,
-        "nickname": user.user_nickname,
-        "avatar": avatar_url,
-        "favorite": user.user_favorite,
-        "decided": user.user_decided,
-        "curriculum": curriculum,
-    }
+    try:
+        # 查询
+        user = models.User.objects.filter(user_id=id_).first()
+        if not user:
+            return const.RESPONSE_404
+        avatar_url = user.user_avatar.url
+        curriculum = {}
+        if user.user_curriculum:
+            user_curriculum_id = user.user_curriculum
+            user_curriculum = models.Curriculum.objects.filter(id=user_curriculum_id).values("courses")
+            if user_curriculum.exists():
+                curriculum = user_curriculum.first()
+            
+        # 返回结果
+        return {
+            "status": 200,
+            "nickname": user.user_nickname,
+            "avatar": avatar_url,
+            "favorite": user.user_favorite,
+            "decided": user.user_decided,
+            "curriculum": curriculum,
+        }
+    except Exception as e:
+        return const.RESPONSE_500
 
 
 # 查询课程列表
@@ -102,24 +118,27 @@ def get_courses():
 
     :return: 返回的信息（在请求正确的情况下包含字典列表 `courses<type = list[dict]>` ）
     """
-    # 查询数据库
-    courses = models.MainCourses.objects.all().values(
-        "id",
-        "code",
-        "name",
-        "teacher",
-        "credit",
-        "period",
-        "time",
-        "department",
-        "type",
-        "selection",
-    )
-    if not courses:
-        return const.RESPONSE_404
+    try:
+        # 查询数据库
+        courses = models.MainCourses.objects.all().values(
+            "id",
+            "code",
+            "name",
+            "teacher",
+            "credit",
+            "period",
+            "time",
+            "department",
+            "type",
+            "selection",
+        )
+        if not courses:
+            return const.RESPONSE_404
 
-    # 返回结果
-    return {"status": 200, "courses": list(courses)}
+        # 返回结果
+        return {"status": 200, "courses": list(courses)}
+    except Exception as e:
+        return const.RESPONSE_500
 
 
 # 按条件搜索课程简要信息
@@ -260,7 +279,7 @@ def get_course_detail_by_info(code: str, name: str, teacher: str):
         if code is None or name is None or teacher is None:
             return const.RESPONSE_400
         
-        id_ = calculate_course_id(code, name, teacher)
+        id_ = cal_course_id(code, name, teacher)
         # 查询数据库
         course = (
             models.CoursesDetails.objects.filter(id=id_)

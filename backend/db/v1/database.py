@@ -49,7 +49,7 @@ def cal_curriculum_id(courses: dict) -> str:
         raise  # 计算错误
 
 
-def calculate_course_id(code: str, name: str, teacher: str) -> str:
+def cal_course_id(code: str, name: str, teacher: str) -> str:
     """
     计算课程id（使用课程代码、课程名称、教师名作为依据）
 

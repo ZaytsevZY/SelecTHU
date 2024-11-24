@@ -6,6 +6,55 @@
 from django.db import models
 
 
+# 用户表（总表）
+class User(models.Model):
+    """
+    用户表（总表）
+
+    :id: 学号（用户唯一标识）（主键）
+    :nickname: 用户昵称
+    :avatar: 用户头像
+    :favorite: 收藏课程
+    :decided: 已选课程
+    :curriculum: 培养方案（外键）
+    """
+
+    # 个人基本信息
+    user_id = models.CharField(
+        max_length=12, primary_key=True, unique=True, name="id"
+    )  # 学号（用户唯一标识）（主键）
+    user_nickname = models.CharField(max_length=64, name="nickname")  # 用户昵称
+    user_avatar = models.ImageField(
+        name="avatar", blank=True, default="default_avater.png", upload_to="avatar/"
+    )  # 用户头像
+
+    user_curriculum = models.CharField(
+        max_length=64, name="curriculum", default="", blank=True
+    )  # 培养方案
+
+    # 课程信息（列表）
+    user_favorite = models.JSONField(
+        name="favorite", blank=True, default=[]
+    )  # 收藏课程
+    # 内部结构：
+    # [
+    #     <course_id: str>,
+    #     ...
+    # ]
+    user_decided = models.JSONField(name="decided", blank=True, default=[])  # 已选课程
+    # 内部结构：
+    # [
+    #     {
+    #        course_id: <course_id: str>,
+    #        selection_type: <selection_type: str>
+    #     },
+    #     ...
+    # ]
+
+    class Meta:
+        db_table = "user"
+
+
 # 培养方案表
 class Curriculum(models.Model):
     """
@@ -45,51 +94,6 @@ class Curriculum(models.Model):
         db_table = "curriculum"
 
 
-# 用户表（总表）
-class User(models.Model):
-    """
-    用户表（总表）
-
-    :id: 学号（用户唯一标识）（主键）
-    :nickname: 用户昵称
-    :avatar: 用户头像
-    :favorite: 收藏课程
-    :decided: 已选课程
-    :curriculum: 培养方案（外键）
-    """
-
-    # 个人基本信息
-    user_id = models.CharField(
-        max_length=12, primary_key=True, unique=True, name="id"
-    )  # 学号（用户唯一标识）（主键）
-    user_nickname = models.CharField(max_length=64, name="nickname")  # 用户昵称
-    user_avatar = models.ImageField(name="avatar", default="default_avater.png", upload_to="avatar/")  # 用户头像
-
-    user_curriculum = models.ForeignKey(
-        to=Curriculum, on_delete=models.DO_NOTHING, name="curriculum", null=True
-    )  # 培养方案
-
-    # 课程信息（列表）
-    user_favorite = models.JSONField(name="favorite")  # 收藏课程
-    # 内部结构：
-    # [
-    #     <course_id: str>,
-    #     ...
-    # ]
-    user_decided = models.JSONField(name="decided")  # 已选课程
-    # 内部结构：
-    # [
-    #     {
-    #        course_id: <course_id: str>,
-    #        selection_type: <selection_type: str>
-    #     },
-    #     ...
-    # ]
-
-    class Meta:
-        db_table = "user"
-
-
 # 课程详细信息表
 class CoursesDetails(models.Model):
     """
@@ -111,8 +115,8 @@ class CoursesDetails(models.Model):
     # {
     #     TODO: 完善表结构
     # }
-    score = models.FloatField(name="score")  # 课程评分
-    comments = models.JSONField(name="comments")  # 课程评价
+    score = models.FloatField(name="score", blank=True, default=-1)  # 课程评分
+    comments = models.JSONField(name="comments", blank=True, default=[])  # 课程评价
     # 内部结构：
     # [
     #     {
