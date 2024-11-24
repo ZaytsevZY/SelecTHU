@@ -17,27 +17,35 @@ export default function CourseSelection() {
 
   // 添加课程到课表
   const addCourseToTable = (course: Course) => {
-    // 检查课程是否已经在课表中
     if (!selectedCourses.find(c => c.id === course.id)) {
       setSelectedCourses([...selectedCourses, course]);
     }
+
+    // 从备选清单中删除该课程
+    setAvailableCourses(prevAvailableCourses =>
+      prevAvailableCourses.filter(c => c.id !== course.id)
+    );
   };
 
   // 从备选清单中删除课程
   const removeCourseFromAvailable = (courseId: string) => {
-    setAvailableCourses(availableCourses.filter(c => c.id !== courseId));
+    setAvailableCourses(prevAvailableCourses =>
+      prevAvailableCourses.filter(c => c.id !== courseId)
+    );
   };
 
   // 从课表中删除课程（如果需要）
   const deleteCourseFromTable = (courseId: string) => {
-    setSelectedCourses(selectedCourses.filter(c => c.id !== courseId));
+    setSelectedCourses(prevSelectedCourses =>
+      prevSelectedCourses.filter(c => c.id !== courseId)
+    );
   };
 
   return (
     <>
       <CourseList
         availableCourses={availableCourses}
-        addCourse={addCourseToTable}
+        addCourseToTable={addCourseToTable} // Changed here
         deleteCourse={removeCourseFromAvailable}
       />
       <CourseTable

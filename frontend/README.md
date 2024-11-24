@@ -15,6 +15,7 @@ frontend/
 │   │   │   ├── main/
 │   │   │   │   ├── CourseTable.tsx      // 课程表组件
 │   │   │   │   ├── CourseSelection.tsx      // 管理课程状态组件
+│   │   │   │   ├── CourseRow.tsx      // hook管理组件
 │   │   │   │   ├── StatusCard.tsx       // 状态卡片组件（志愿分配和选课阶段）
 │   │   │   │   ├── TeachingPlan.tsx     // main界面右侧教学计划组件
 │   │   │   │   └── CourseList.tsx       // main界面右侧课程备选清单组件

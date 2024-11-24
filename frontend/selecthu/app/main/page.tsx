@@ -56,18 +56,20 @@ export default function MainPage() {
     setSelectedCourses((prevSelectedCourses) => {
       // 检查课程是否已添加，避免重复添加
       if (!prevSelectedCourses.some((c) => c.id === course.id)) {
+        // 如果未添加过，将课程添加到已选课程列表
         return [...prevSelectedCourses, course];
       }
+      // 如果已存在，返回原列表
       return prevSelectedCourses;
     });
+
+    // 从备选清单中删除该课程
+    setAvailableCourses((prevAvailableCourses) =>
+      prevAvailableCourses.filter((c) => c.id !== course.id)
+    );
   };
 
-  // 添加课程的方法（供CourseList使用）
-  const addCourse = (course: Course) => {
-    addCourseToTable(course);
-  };
-
-  // 从备选清单中删除课程的方法
+  // 从备选清单中删除课程的方法（用于删除按钮）
   const deleteCourse = (courseId: string) => {
     setAvailableCourses((prevAvailableCourses) =>
       prevAvailableCourses.filter((c) => c.id !== courseId)
@@ -107,8 +109,8 @@ export default function MainPage() {
                 <TeachingPlan />
                 <CourseList
                   availableCourses={availableCourses}
-                  addCourse={addCourse}
-                  deleteCourse={deleteCourse}
+                  addCourseToTable={addCourseToTable} // 传递添加课程的方法
+                  deleteCourse={deleteCourse} // 传递删除课程的方法
                 />
               </Grid>
             </GridItem>
