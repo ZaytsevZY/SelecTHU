@@ -119,7 +119,6 @@
   - 接口：`/api/v1/courses/`
   - 请求类型：`GET`
   - 请求参数：
-      - "course_id": <str>（可选）
       - "code": <str>（可选）
       - "name": <str>（可选）
       - "teacher": <str>（可选）
@@ -159,8 +158,8 @@
     ```
   - 说明：获取指定id课程的详细信息
 
-5. **课程状态切换**<span id="change_course_condition"></span>
-  - 接口：`/api/v1/change-course-condition/<user_id>/`
+5. **课程状态切换**<span id="modify_course_condition"></span>
+  - 接口：`/api/v1/modify-course-condition/<user_id>/`
   - 请求类型：`POST`
   - 请求参数：
     - `course_id<str>`：课程id
@@ -205,11 +204,11 @@
     ```
   - 说明：获取用户的收藏课程
 
-8. **修改课程志愿**<span id="change_course_level"></span>
-  - 接口：`/api/v1/change-course-wish/<user_id>`
+8. **修改课程志愿**<span id="modify_course_selection_type"></span>
+  - 接口：`/api/v1/modify-course-wish/<user_id>`
   - 请求类型：`POST`
   - 请求参数：无
-    - `level<int>`：目标志愿（1,2,3）
+    - `selection-type<str>`：目标志愿（两位字符，第一位b,x,r,t，第二位0,1,2,3）
   - 返回值：`{"status": <int>,}`
   - 说明：修改用户指定课程的志愿，前端做好处理后再将结果传递给后端（比如前端将一个徽章从一门课移到另一门课，则发送两个修改课程志愿的请求）
 
@@ -263,7 +262,6 @@
         <course_code: str>,
         ...
       ],
-      ...
     }
     ```
 
