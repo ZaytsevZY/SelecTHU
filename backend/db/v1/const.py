@@ -24,6 +24,7 @@ SALT: tuple = tuple(os.getenv(f"SALT_{i}", "") for i in range(1, _SALT_COUNT + 1
 # 搜索类型
 SEARCH_MODE: tuple = ("exact", "exclude", "fuzzy")
 
+
 # 周次定义
 class TIME_WEEK:
     ODD: int = (1,)  # 单周
