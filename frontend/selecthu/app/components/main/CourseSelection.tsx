@@ -1,4 +1,3 @@
-// components/main/CourseSelection.tsx
 import React, { useState } from 'react';
 import { Course } from "@/app/types/course";
 import CourseList from './CourseList';
@@ -13,6 +12,31 @@ export default function CourseSelection() {
   // 状态：备选清单和已选课程
   const [availableCourses, setAvailableCourses] = useState<Course[]>(initialAvailableCourses);
   const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
+
+  // 颜色数组
+  const colors = [
+    "blue",
+    "green",
+    "red",
+    "yellow",
+    "purple",
+    "teal",
+    "orange",
+    "pink",
+    "cyan",
+    "gray",
+  ];
+
+  // 定义 getCourseColor 函数，根据课程 ID 返回固定的颜色
+  const getCourseColor = (courseId: string): string => {
+    // 使用简单的哈希函数，将 courseId 映射到 colors 数组的索引
+    let hash = 0;
+    for (let i = 0; i < courseId.length; i++) {
+      hash = courseId.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % colors.length;
+    return colors[index];
+  };
 
   // 添加课程到课表
   const addCourseToTable = (course: Course) => {
@@ -55,11 +79,13 @@ export default function CourseSelection() {
         availableCourses={availableCourses}
         addCourseToTable={addCourseToTable}
         deleteCourse={removeCourseFromAvailable}
-        moveCourseToAvailable={moveCourseToAvailable} // 添加此行
+        moveCourseToAvailable={moveCourseToAvailable}
+        getCourseColor={getCourseColor} // 传递 getCourseColor 属性
       />
       <CourseTable
         selectedCourses={selectedCourses}
         addCourseToTable={addCourseToTable}
+        getCourseColor={getCourseColor} // 传递 getCourseColor 属性
       />
     </>
   );

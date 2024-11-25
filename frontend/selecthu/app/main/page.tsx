@@ -1,8 +1,17 @@
 // app/main/page.tsx
+
 "use client";
 
 import { useState } from "react";
-import { Box, Grid, GridItem, useColorModeValue } from "@chakra-ui/react";
+import {
+  Box,
+  Grid,
+  GridItem,
+  useColorModeValue,
+  Button,
+  VStack,
+  Flex,
+} from "@chakra-ui/react";
 import Navbar from "../components/layout/Navbar";
 import StatusCard from "../components/main/StatusCard";
 import CourseTable from "../components/main/CourseTable";
@@ -54,6 +63,31 @@ export default function MainPage() {
   // 管理已选课程列表（课程表中的课程）
   const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
 
+  // 颜色数组
+  const colors = [
+    "blue",
+    "green",
+    "red",
+    "yellow",
+    "purple",
+    "teal",
+    "orange",
+    "pink",
+    "cyan",
+    "gray",
+  ];
+
+  // 根据课程ID获取颜色
+  const getCourseColor = (courseId: string): string => {
+    // 使用哈希函数将课程ID映射到颜色数组的索引
+    let hash = 0;
+    for (let i = 0; i < courseId.length; i++) {
+      hash = courseId.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % colors.length;
+    return colors[index];
+  };
+
   // 添加课程到课程表的方法
   const addCourseToTable = (course: Course) => {
     setSelectedCourses((prevSelectedCourses) => {
@@ -95,6 +129,9 @@ export default function MainPage() {
     });
   };
 
+  // 定义统一的高度
+  const cardHeight = "150px"; // 调整高度以匹配按钮区域的高度
+
   return (
     // 将整个应用包裹在 DndProvider 中，启用拖拽功能
     <DndProvider backend={HTML5Backend}>
@@ -106,10 +143,59 @@ export default function MainPage() {
           <Grid templateColumns="repeat(12, 1fr)" gap={4}>
             {/* 状态卡片区域 */}
             <GridItem colSpan={3}>
-              <StatusCard title="志愿分配" content="第一轮志愿分配进行中..." />
+              <StatusCard
+                title="志愿分配"
+                content="第一轮志愿分配进行中..."
+                height={cardHeight} // 使用height属性
+              />
             </GridItem>
-            <GridItem colSpan={5}>
-              <StatusCard title="选课阶段" content="预选阶段：2024-02-20 ~ 2024-02-25" />
+            {/* 调整后的选课阶段卡片区域 */}
+            <GridItem colSpan={3}>
+              <StatusCard
+                title="选课阶段"
+                content="预选阶段：2024-02-20 ~ 2024-02-25"
+                height={cardHeight} // 使用height属性
+              />
+            </GridItem>
+            {/* 新增的按钮区域 */}
+            <GridItem colSpan={2}>
+              <Box
+                bg={useColorModeValue("white", "gray.700")}
+                rounded="md"
+                p={4}
+                shadow="sm"
+                height={cardHeight} // 设置固定高度
+                overflow="hidden" // 防止内容撑大
+              >
+                <Flex
+                  direction="column"
+                  align="center"
+                  justify="center"
+                  height="100%"
+                >
+                  {/* 导出课表按钮 */}
+                  <Button
+                    variant="outline"
+                    colorScheme="blue"
+                    size="sm" // 调整按钮大小
+                    w="100%"
+                    rounded="md"
+                    mb={2}
+                  >
+                    导出课表
+                  </Button>
+                  {/* 列表查看按钮 */}
+                  <Button
+                    variant="outline"
+                    colorScheme="blue"
+                    size="sm" // 调整按钮大小
+                    w="100%"
+                    rounded="md"
+                  >
+                    列表查看
+                  </Button>
+                </Flex>
+              </Box>
             </GridItem>
 
             {/* 右侧区域占位 */}
@@ -120,6 +206,7 @@ export default function MainPage() {
               <CourseTable
                 selectedCourses={selectedCourses}
                 addCourseToTable={addCourseToTable}
+                getCourseColor={getCourseColor} // 传递 getCourseColor 函数
               />
             </GridItem>
 
@@ -131,7 +218,8 @@ export default function MainPage() {
                   availableCourses={availableCourses}
                   addCourseToTable={addCourseToTable}
                   deleteCourse={deleteCourse}
-                  moveCourseToAvailable={moveCourseToAvailable} // 传递移动课程的方法
+                  moveCourseToAvailable={moveCourseToAvailable}
+                  getCourseColor={getCourseColor} // 传递 getCourseColor 函数
                 />
               </Grid>
             </GridItem>

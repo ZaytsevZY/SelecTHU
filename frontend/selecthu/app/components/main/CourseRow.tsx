@@ -1,3 +1,5 @@
+// components/main/CourseRow.tsx
+
 import React, { useRef, useEffect } from "react";
 import {
   Td,

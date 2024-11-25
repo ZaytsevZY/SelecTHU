@@ -1,4 +1,5 @@
 // components/main/CourseTable.tsx
+
 import React, { useEffect, useRef } from "react";
 import {
   Table,
@@ -26,16 +27,21 @@ const ItemTypes = {
 interface CourseTableProps {
   selectedCourses: Course[];
   addCourseToTable: (course: Course) => void;
+  getCourseColor: (courseId: string) => string;
 }
 
 export default function CourseTable({
   selectedCourses,
   addCourseToTable,
+  getCourseColor,
 }: CourseTableProps) {
   const borderColor = useColorModeValue("gray.200", "gray.700");
   const bgColor = useColorModeValue("white", "gray.800");
 
-  // 时间段显示
+  // 添加拖拽中的课程ID状态
+  const [draggedCourseId, setDraggedCourseId] = React.useState<string | null>(null);
+
+  // 时间段显示（节次从1-15）
   const timeSlots = [
     "第一节 (8:00-8:45)",
     "第二节 (8:50-9:35)",
@@ -47,35 +53,14 @@ export default function CourseTable({
     "第八节 (15:20-16:05)",
     "第九节 (16:10-16:55)",
     "第十节 (17:00-17:45)",
+    "第十一节 (18:00-18:45)",
+    "第十二节 (18:50-19:35)",
+    "第十三节 (19:40-20:25)",
+    "第十四节 (20:30-21:15)",
+    "第十五节 (21:20-22:05)",
   ];
 
   const weekDays = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
-
-  // 颜色数组
-  const colors = [
-    "blue.50",
-    "green.50",
-    "red.50",
-    "yellow.50",
-    "purple.50",
-    "teal.50",
-    "orange.50",
-    "pink.50",
-    "cyan.50",
-    "gray.50",
-  ];
-
-  // 创建一个颜色映射对象
-  const courseColorMap: { [courseId: string]: string } = {};
-
-  // 获取课程的颜色，如果未分配则分配一个新颜色
-  const getCourseColor = (courseId: string): string => {
-    if (!courseColorMap[courseId]) {
-      const colorIndex = Object.keys(courseColorMap).length % colors.length;
-      courseColorMap[courseId] = colors[colorIndex];
-    }
-    return courseColorMap[courseId];
-  };
 
   // 根据时间段获取课程
   const getCourse = (day: number, slot: number): Course | undefined => {
@@ -129,6 +114,11 @@ export default function CourseTable({
   const boxRef = React.useRef<HTMLDivElement>(null);
   drop(boxRef);
 
+  // 获取课程的颜色
+  const getColor = (courseId: string) => {
+    return getCourseColor(courseId);
+  };
+
   return (
     <chakra.div
       ref={boxRef}
@@ -159,13 +149,15 @@ export default function CourseTable({
           </Tr>
         </Thead>
         <Tbody>
-          {timeSlots.map((time, slotIndex) => (
-            <Tr key={`slot-${slotIndex}`} height="60px">
+          {timeSlots.map((_, slotIndex) => (
+            // 移除了 height 属性
+            <Tr key={`slot-${slotIndex}`}>
               <Td
                 fontSize="xs"
                 border="1px solid"
                 borderColor={borderColor}
                 textAlign="center"
+                height="60px" // 为节次列设置默认高度
               >
                 {`${slotIndex + 1}`}
               </Td>
@@ -176,7 +168,7 @@ export default function CourseTable({
 
                 const course = getCourse(dayIndex + 1, slotIndex + 1);
                 const rowSpan = getRowSpan(dayIndex + 1, slotIndex + 1);
-                const color = course ? getCourseColor(course.id) : "gray.200";
+                const color = course ? getColor(course.id) : "gray";
 
                 return (
                   <Td
@@ -186,10 +178,18 @@ export default function CourseTable({
                     textAlign="center"
                     border="1px solid"
                     borderColor={borderColor}
-                    verticalAlign="middle"
+                    verticalAlign="top"
+                    // 为空白单元格设置默认高度
+                    height={course ? undefined : "60px"}
                   >
                     {course && shouldShowCourse(dayIndex + 1, slotIndex + 1) ? (
-                      <CourseBlock course={course} color={color} />
+                      <CourseBlock
+                        course={course}
+                        color={color}
+                        duration={rowSpan} // 传递持续时间
+                        setDraggedCourseId={setDraggedCourseId}
+                        draggedCourseId={draggedCourseId}
+                      />
                     ) : null}
                   </Td>
                 );
@@ -206,17 +206,31 @@ export default function CourseTable({
 interface CourseBlockProps {
   course: Course;
   color: string;
+  duration: number; // 新增持续时间属性
+  setDraggedCourseId: (id: string | null) => void;
+  draggedCourseId: string | null;
 }
 
-function CourseBlock({ course, color }: CourseBlockProps) {
+function CourseBlock({
+  course,
+  color,
+  duration,
+  setDraggedCourseId,
+  draggedCourseId,
+}: CourseBlockProps) {
   // 使用 useDrag 钩子
-  const [{ isDragging }, drag, preview] = useDrag(() => ({
+  const [, drag, preview] = useDrag(() => ({
     type: ItemTypes.COURSE,
-    item: { course },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }), [course]);
+    item: () => {
+      // 在这里设置拖拽中的课程ID
+      setDraggedCourseId(course.id);
+      return { course };
+    },
+    // 拖拽结束时，清除拖拽中的课程ID
+    end: () => {
+      setDraggedCourseId(null);
+    },
+  }));
 
   // 抑制默认的拖拽预览
   useEffect(() => {
@@ -227,19 +241,31 @@ function CourseBlock({ course, color }: CourseBlockProps) {
   const boxRef = useRef<HTMLDivElement>(null);
   drag(boxRef);
 
+  // 使用 useColorModeValue，根据主题模式选择适当的颜色
+  const bgColor = useColorModeValue(`${color}.100`, `${color}.700`);
+  const textColor = useColorModeValue("black", "white");
+
+  // 判断当前课程是否正在被拖拽
+  const isBeingDragged = draggedCourseId === course.id;
+
+  // 计算课程块的高度
+  const slotHeight = 60; // 每节课的高度，可以根据需要调整
+  const totalHeight = duration * slotHeight;
+
   return (
     <Box
       ref={boxRef}
       p={2}
-      bg={color}
+      bg={bgColor}
       borderRadius="none"
-      height="100%"
+      minHeight={`${totalHeight}px`} // 设置最小高度
       width="100%"
       fontSize="xs"
       display="flex"
       flexDirection="column"
       justifyContent="center"
-      opacity={isDragging ? 0 : 1} // 拖拽时隐藏原课程块
+      opacity={isBeingDragged ? 0 : 1}
+      color={textColor}
     >
       <Text fontWeight="bold">{course.name}</Text>
       <Text>{course.teacher}</Text>
