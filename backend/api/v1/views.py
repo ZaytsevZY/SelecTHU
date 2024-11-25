@@ -54,13 +54,25 @@ def get_user_info(request, user_id):
     if not user:
         return Response({"status": 404, "message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
+    decided_ids = user.decided
+    courses_decided = []
+    for course_id in decided_ids:
+        course = db_utils.get_course(id_= course_id)
+        courses_decided.append(course)
+
+    favorite_ids = user.favorite
+    courses_favorite = []
+    for course_id in favorite_ids:
+        course = db_utils.get_course(id_= course_id)
+        courses_favorite.append(course)
+
     return Response({
         "status": 200,
         "user": {
             "nickname": user.nickname,
             "avatar": user.avatar,
-            "courses-favorite": user.favorite,
-            "courses-decided": user.decided,
+            "courses-favorite": courses_favorite,
+            "courses-decided": courses_decided,
             "curriculum": user.curriculum,
         }
     }, status=status.HTTP_200_OK)
@@ -127,6 +139,7 @@ def get_curriculum(request, user_id):
     """
     #TODO：确定培养方案的用法
     return Response({
+        
         "status": 200,
     }, status=status.HTTP_200_OK)
 
