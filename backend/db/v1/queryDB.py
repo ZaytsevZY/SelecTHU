@@ -19,21 +19,27 @@ def get_curriculum(id_: str):
     """
     查询培养方案
 
-    :param `id_`: 培养方案id（不叫id是避免与关键字冲突）
+    :param `id_`: 用户id（不叫id是避免与关键字冲突）
     :return: 返回的信息（在请求正确的情况下包含培养方案 `curriculum<type = list>` ）
     """
 
     # 检查输入合法性
-    if id_ is None:
+    if isinstance(id_, str) is False:
         return const.RESPONSE_400
+    try:
+        # 查询
+        user = models.User.objects.get(user_id=id_)
+        if not user:
+            return const.RESPONSE_404
+        curriculum = {}
+        if user.user_curriculum:
+            user_curriculum_id = user.user_curriculum
+            curriculum = models.Curriculum.objects.get(id=user_curriculum_id).values("courses")
 
-    # 查询
-    user = models.User.objects.filter(user_id=id_).first()
-    if not user:
-        return const.RESPONSE_404
-
-    # 返回结果
-    return {"status": 200, "curriculum": user.user_curriculum.courses}
+        # 返回结果
+        return {"status": 200, "curriculum": curriculum}
+    except Exception as e:
+        return const.RESPONSE_500
 
 
 # 查询培养方案是否存在
@@ -46,7 +52,7 @@ def get_curriculum_existance(curriculum: dict):
     """
 
     # 检查输入合法性
-    if curriculum is None:
+    if isinstance(curriculum, dict) is False:
         return const.RESPONSE_400
 
     try:
@@ -75,51 +81,88 @@ def get_user(id_: str):
     ）
     """
     # 检查输入合法性
-    if id_ is None:
+    if isinstance(id_, str) is False:
         return const.RESPONSE_400
-
-    # 查询
-    user = models.User.objects.filter(user_id=id_).first()
-    if not user:
-        return const.RESPONSE_404
-    avatar_url = user.user_avatar.url
-    curriculum = user.user_curriculum.courses if user.user_curriculum else None
-    # 返回结果
-    return {
-        "status": 200,
-        "nickname": user.user_nickname,
-        "avatar": avatar_url,
-        "favorite": user.user_favorite,
-        "decided": user.user_decided,
-        "curriculum": curriculum,
-    }
+    try:
+        # 查询
+        user = models.User.objects.filter(user_id=id_).first()
+        if not user:
+            return const.RESPONSE_404
+        avatar_url = user.user_avatar.url
+        curriculum = {}
+        if user.user_curriculum:
+            user_curriculum_id = user.user_curriculum
+            user_curriculum = models.Curriculum.objects.filter(id=user_curriculum_id).values("courses")
+            if user_curriculum.exists():
+                curriculum = user_curriculum.first()
+            
+        # 返回结果
+        return {
+            "status": 200,
+            "nickname": user.user_nickname,
+            "avatar": avatar_url,
+            "favorite": user.user_favorite,
+            "decided": user.user_decided,
+            "curriculum": curriculum,
+        }
+    except Exception as e:
+        return const.RESPONSE_500
 
 
 # 查询课程列表
-def get_courses():
+def get_courses(count: int = -1):
     """
-    查询课程列表
+    查询课程列表（指定数量）
 
+    :param `count`: 查询数量（默认为-1，即全部查询）
     :return: 返回的信息（在请求正确的情况下包含字典列表 `courses<type = list[dict]>` ）
     """
-    # 查询数据库
-    courses = models.MainCourses.objects.all().values(
-        "id",
-        "code",
-        "name",
-        "teacher",
-        "credit",
-        "period",
-        "time",
-        "department",
-        "type",
-        "selection",
-    )
-    if not courses:
-        return const.RESPONSE_404
+    if isinstance(count, int) is False:
+        return const.RESPONSE_400
+    
+    try:
+        courses = []
+        if count == -1:
+            # 查询数据库
+            courses = models.MainCourses.objects.all().values(
+                "id",
+                "code",
+                "name",
+                "teacher",
+                "credit",
+                "period",
+                "time",
+                "department",
+                "type",
+                "selection",
+            )
+            if not courses:
+                return const.RESPONSE_404
+        else:
+            # 判断count是否合法（是否超过数据库中的数据数量）
+            if count <= 0 or count > models.MainCourses.objects.count():
+                return const.RESPONSE_400
+            
+            # 查询数据库
+            courses = models.MainCourses.objects.all().values(
+                "id",
+                "code",
+                "name",
+                "teacher",
+                "credit",
+                "period",
+                "time",
+                "department",
+                "type",
+                "selection",
+            )[:count]
+            if not courses:
+                return const.RESPONSE_404
 
-    # 返回结果
-    return {"status": 200, "courses": list(courses)}
+        # 返回结果
+        return {"status": 200, "courses": list(courses)}
+    except Exception as e:
+        return const.RESPONSE_500
 
 
 # 按条件搜索课程简要信息
@@ -140,7 +183,7 @@ def get_course(
 
     :param `id_`: 课程识别码
     :param `code`: 课程代码
-    :param `nam`: 课程名称
+    :param `name`: 课程名称
     :param `teacher`: 教师名称
     :param `credit`: 学分
     :param `period`: 学时
@@ -256,11 +299,11 @@ def get_course_detail_by_info(code: str, name: str, teacher: str):
 
     :return: 返回的信息（包含 详细信息 `details<type = dict>` ）
     """
+    if code is None or name is None or teacher is None:
+        return const.RESPONSE_400
+    
     try:
-        if code is None or name is None or teacher is None:
-            return const.RESPONSE_400
-        
-        id_ = calculate_course_id(code, name, teacher)
+        id_ = cal_course_id(code, name, teacher)
         # 查询数据库
         course = (
             models.CoursesDetails.objects.filter(id=id_)
@@ -290,10 +333,10 @@ def get_course_detail_by_id(id_: str):
     :param `id_`: 课程id
     :return: 返回的信息（包含 详细信息 `details<type = dict>` ）
     """
+    if id_ is None:
+        return const.RESPONSE_400
+    
     try:
-        if id_ is None:
-            return const.RESPONSE_400
-
         # 查询数据库
         course = (
             models.CoursesDetails.objects.filter(id=id_)
