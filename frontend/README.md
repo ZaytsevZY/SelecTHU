@@ -22,6 +22,7 @@ frontend/
 │   │   │   │   └── CourseList.tsx       // main界面右侧课程备选清单组件
 │   │   │   ├── search/
 │   │   │   │   ├── CommentSection.tsx       // 评论区内容
+│   │   │   │   ├── CourseSelectionPage.tsx          // 选课状态管理共享
 │   │   │   │   ├── CourseTable.tsx          // 选课课程列表
 │   │   │   │   ├── FilterSection.tsx        // 筛选条件
 │   │   │   │   ├── SelectedCourseInfo.tsx   // 课程信息显示
