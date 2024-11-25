@@ -33,11 +33,12 @@ db
 2. **查询培养方案**<span id="get_curriculum"></span>
     - 对应函数: `db_utils.get_curriculum`
     - 请求参数:
-        - `id_<str>` : 培养方案ID
+        - `id_<str>` : 用户ID（学号）
     - 返回值: `{ "status": <int>, "curriculum": <list> }`
     - 错误码：
         - `400` : 参数错误
         - `404` : 未找到培养方案
+        - `500` : 内部错误
     - 说明: 查询培养方案。
 
 3. **查询培养方案是否存在**<span id="get_curriculum_existance"></span>
@@ -50,7 +51,7 @@ db
         - `500` : 内部错误
     - 说明: 查询培养方案是否存在。
 
-4. **查询用户信息**<span id="get_user"></span>
+4. **查询用户信息**<span id="get_user"></span>**
     - 对应函数: `db_utils.get_user`
     - 请求参数:
         - `id_<str>` : 用户ID（学号）
@@ -58,7 +59,8 @@ db
     - 错误码：
         - `400` : 参数错误
         - `404` : 未找到用户
-    - 说明: 查询用户信息。在返回值中， `avatar` 为用户头像链接的URL，详细说明见 [头像字段说明](#avatar-explain) 。
+        - `500` : 内部错误
+    - 说明: 查询用户信��。在返回值中， `avatar` 为用户头像链接的URL，详细说明见 [头像字段说明](#avatar-explain) 。
 
 5. **查询课程列表**<span id="get_courses"></span>
     - 对应函数: `db_utils.get_courses`
@@ -133,6 +135,83 @@ db
         - `409` : 培养方案已存在
         - `500` : 内部错误
     - 说明: 添加培养方案。
+
+3. **添加用户已选课程**<span id="add_course_to_decided"></span>
+    - 对应函数: `db_utils.add_course_to_decided`
+    - 请求参数:
+        - `user_id<str>` : 用户ID（学号）
+        - `course_id<str>` : 课程识别码
+        - `selection_type<str>` (可选): 选课类型，详细说明见 [选课类型字段说明](#selection-explain)
+    - 返回值: `{ "status": <int>, "msg": <str> }`
+    - 错误码：
+        - `400` : 参数错误
+        - `404` : 用户不存在
+        - `409` : 课程已存在
+        - `500` : 内部错误
+    - 说明: 添加用户已选课程。
+
+4. **添加用户备选课程**<span id="add_course_to_favorite"></span>
+    - 对应函数: `db_utils.add_course_to_favorite`
+    - 请求参数:
+        - `user_id<str>` : 用户ID（学号）
+        - `course_id<str>` : 课程识别码
+    - 返回值: `{ "status": <int>, "msg": <str> }`
+    - 错误码：
+        - `400` : 参数错误
+        - `404` : 用户不存在
+        - `409` : 课程已存在
+        - `500` : 内部错误
+    - 说明: 添加用户备选课程。
+
+5. **移除用户备选课程**<span id="remove_course_from_favorite"></span>
+    - 对应函数: `db_utils.remove_course_from_favorite`
+    - 请求参数:
+        - `user_id<str>` : 用户ID（学号）
+        - `course_id<str>` : 课程识别码
+    - 返回值: `{ "status": <int>, "msg": <str> }`
+    - 错误码：
+        - `400` : 参数错误
+        - `404` : 用户不存在或课程不存在
+        - `500` : 内部错误
+    - 说明: 移除用户备选课程。
+
+6. **删除培养方案（根据ID）**<span id="remove_curriculum_by_id"></span>
+    - 对应函数: `db_utils.remove_curriculum_by_id`
+    - 请求参数:
+        - `id_<str>` : 培养方案ID
+    - 返回值: `{ "status": <int>, "msg": <str> }`
+    - 错误码：
+        - `400` : 参数错误
+        - `404` : 培养方案不存在
+        - `500` : 内部错误
+    - 说明: 通过ID删除培养方案。
+
+7. **删除培养方案（根据课程）**<span id="remove_curriculum_by_curriculum"></span>
+    - 对应函数: `db_utils.remove_curriculum_by_curriculum`
+    - 请求参数:
+        - `curriculum<dict>` : 培养方案
+    - 返回值: `{ "status": <int>, "msg": <str> }`
+    - 错误码：
+        - `400` : 参数错误
+        - `404` : 培养方案不存在
+        - `500` : 内部错误
+    - 说明: 通过培养方案内容删除培养方案。
+
+8. **删除所有课程信息**<span id="remove_all_course"></span>
+    - 对应函数: `db_utils.remove_all_course`
+    - 请求参数: 无
+    - 返回值: `{ "status": <int>, "msg": <str> }`
+    - 错误码：
+        - `500` : 内部错误
+    - 说明: 删除所有课程信息。
+
+9. **删除所有培养方案信息**<span id="remove_all_curriculum"></span>
+    - 对应函数: `db_utils.remove_all_curriculum`
+    - 请求参数: 无
+    - 返回值: `{ "status": <int>, "msg": <str> }`
+    - 错误码：
+        - `500` : 内部错误
+    - 说明: 删除所有培养方案信息。
 
 #### 其他信息
 1. 更多常量定义见 [`const.py`](./v1/const.py)

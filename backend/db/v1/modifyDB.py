@@ -193,12 +193,12 @@ def change_course_level():
 
 
 # 修改用户信息
-def change_user_info():
+def change_user_info(id_: str, nickname: str = None, avatar: str = None):
     pass
 
 
 # 移除用户
-def remove_user():
+def remove_user(id_: str):
     pass
 
 
