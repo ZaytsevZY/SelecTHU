@@ -82,8 +82,38 @@ def add_curriculum(curriculum: dict) -> dict:
 
 
 # 添加已选课程
-def add_course_to_decided(user_id: str, course_id: str):
-    pass
+def add_course_to_decided(user_id: str, course_id: str, selection_type: str = ""):
+    """
+    添加用户已选课程
+
+    :param user_id: 用户id
+    :param course_id: 课程识别码
+    :param selection_type: 选课类型
+    :return: 返回的信息
+    """
+    # 检查输入合法性
+    if isinstance(user_id, str) is False or isinstance(course_id, str) is False:
+        return const.RESPONSE_400
+
+    try:
+        # 检查用户是否存在
+        if not models.User.objects.filter(user_id=user_id).exists():
+            return const.RESPONSE_404
+
+        # 添加课程
+        user = models.User.objects.get(user_id=user_id)
+        for course in user.user_decided:
+            if course["course_id"] == course_id:
+            # 返回结果：资源冲突（课程已存在）
+                return const.RESPONSE_409
+
+        user.user_decided.append({"course_id": course_id, "selection_type": selection_type})
+        user.save()
+
+        # 返回结果：添加成功
+        return {"status": 200, "msg": "add course to decided successfully"}
+    except Exception as e:
+        return const.RESPONSE_500
 
 
 # 添加备选课程
@@ -120,13 +150,41 @@ def add_course_to_favorite(user_id: str, course_id: str):
 
 
 # 移除已选课程
-def remove_course_from_decided():
+def remove_course_from_decided(user_id: str, course_id: str):
     pass
 
 
 # 移除备选课程
-def remove_course_from_favorite():
-    pass
+def remove_course_from_favorite(user_id: str, course_id: str):
+    """
+    移除用户备选课程
+    
+    :param user_id: 用户id
+    :param course_id: 课程识别码
+    :return: 返回的信息
+    """
+    # 检查输入合法性
+    if isinstance(user_id, str) is False or isinstance(course_id, str) is False:
+        return const.RESPONSE_400
+
+    try:
+        # 检查用户是否存在
+        if not models.User.objects.filter(user_id=user_id).exists():
+            return const.RESPONSE_404
+
+        # 移除课程
+        user = models.User.objects.get(user_id=user_id)
+        if course_id in user.user_favorite:
+            user.user_favorite.remove(course_id)
+            user.save()
+
+            # 返回结果：移除成功
+            return {"status": 200, "msg": "remove course from favorite successfully"}
+        else:
+            # 返回结果：资源不存在（课程不存在）
+            return const.RESPONSE_404
+    except Exception as e:
+        return const.RESPONSE_500
 
 
 # 修改志愿分配
