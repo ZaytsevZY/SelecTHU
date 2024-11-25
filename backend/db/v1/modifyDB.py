@@ -54,9 +54,63 @@ def add_user(id_: str, curriculum: dict = None) -> dict:
         return const.RESPONSE_500
 
 
-# TODO:添加课程信息
+# 添加课程信息
 def add_course(course: dict):
-    pass
+    """
+    添加课程信息（添加新课程）
+
+    :param course: 课程信息（包含课程简要信息和课程详细信息，为二者，具体结构见models定义）
+    :return: 执行结果
+    """
+    if isinstance(course, dict) is False:
+        return const.RESPONSE_400
+
+    try:
+        # 先计算课程id
+        code = course.get("code", "")
+        name = course.get("name", "")
+        teacher = course.get("teacher", "")
+        id_ = cal_course_id(code, name, teacher)
+
+        # 检查是否已存在
+        if models.MainCourses.objects.filter(id=id_).exists():
+            return const.RESPONSE_409
+
+        # 添加到数据库
+        # MainCourses：课程简要信息
+        credit = int(course.get("credit", 0))
+        period = int(course.get("period", 0))
+        time = course.get("time", "")
+        department = course.get("department", "")
+        type_ = course.get("type", "")
+        selection = course.get("selection", const.SELECTION_TYPE.BLANK)
+
+        # CoursesDetails：课程详细信息
+        info = course.get("info", {})
+
+        # 添加至数据库
+        course_details = models.CoursesDetails(id=id_, info=info)
+        course_details.save()
+
+        course_main = models.MainCourses(
+            id=id_,
+            code=code,
+            name=name,
+            teacher=teacher,
+            credit=credit,
+            period=period,
+            time=time,
+            department=department,
+            type=type_,
+            selection=selection,
+            link=course_details,
+        )
+        course_main.save()
+
+        # 返回结果
+        return {"status": 200, "msg": "add course successfully"}
+    except Exception as e:
+        return const.RESPONSE_500
 
 
 # 添加培养方案
@@ -213,7 +267,7 @@ def add_course_comment(course_id: str, comment: dict):
         for c in details.comments:
             comment_score += c["comment_score"]
             cnt += 1
-        
+
         # 保留两位小数
         details.score = round(comment_score / cnt, 2)
         details.comments.append(comment)
@@ -233,7 +287,7 @@ def change_course_level():
 
 
 # TODO:修改用户信息
-def change_user_info(id_: str, nickname: str = None, avatar: str = None):
+def change_user_info(id_: str, nickname: str = None, avatar=None):
     pass
 
 
@@ -260,9 +314,29 @@ def change_course_detail():
 """删除类操作"""
 
 
-# TODO:移除用户
+# 移除用户
 def remove_user(id_: str):
-    pass
+    """
+    移除用户
+    
+    :param id_: 用户id
+    :return: 执行结果
+    """
+    if isinstance(id_, str) is False:
+        return const.RESPONSE_400
+    
+    try:
+        # 检查是否存在
+        if not models.User.objects.filter(user_id=id_).exists():
+            return const.RESPONSE_404
+        
+        # 删除
+        models.User.objects.filter(user_id=id_).delete()
+
+        # 返回结果
+        return {"status": 200, "msg": "remove user successfully"}
+    except Exception as e:
+        return const.RESPONSE_500
 
 
 # TODO:移除已选课程

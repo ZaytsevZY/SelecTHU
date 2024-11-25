@@ -11,12 +11,12 @@ class User(models.Model):
     """
     用户表（总表）
 
-    :id: 学号（用户唯一标识）（主键）
-    :nickname: 用户昵称
-    :avatar: 用户头像
-    :favorite: 收藏课程
-    :decided: 已选课程
-    :curriculum: 培养方案（外键）
+    :param `id`: 学号（用户唯一标识）（主键）
+    :param `nickname`: 用户昵称
+    :param `avatar`: 用户头像
+    :param `favorite`: 收藏课程
+    :param `decided`: 已选课程
+    :param `curriculum`: 培养方案（外键）
     """
 
     # 个人基本信息
@@ -61,8 +61,8 @@ class Curriculum(models.Model):
     """
     培养方案表
 
-    :id: 培养方案的sha256值（主键）
-    :courses: 课程列表
+    :param `id`: 培养方案的sha256值（主键）
+    :param `courses`: 课程列表
     """
 
     # id_ = models.AutoField(primary_key=True, name="id")  # 自增id（主键）
@@ -100,10 +100,10 @@ class CoursesDetails(models.Model):
     """
     课程分表，保存课程详细信息（抽象基类）
 
-    :id: 课程识别码（主键）
-    :info: 课程详细信息
-    :score: 课程评分
-    :comments: 课程评价
+    :param `id`: 课程识别码（主键）
+    :param `info`: 课程详细信息
+    :param `score`: 课程评分
+    :param `comments`: 课程评价
     """
 
     id_ = models.CharField(
@@ -137,20 +137,17 @@ class MainCourses(models.Model):
     """
     课程总表，保存课程主要信息
 
-    :id: 课程识别码（主键）
-    :code: 课程代码
-    :name: 课程名称
-    :teacher: 教师名称
-    :credit: 学分
-    :period: 学时
-    :time: 开课时间
-    :department: 开课院系
-    :type: 课程类型
-    :selection: 选课情况
-
-    TODO: 完善表结构
-
-    :link: 详细信息指向表
+    :param `id`: 课程识别码（主键）
+    :param `code`: 课程代码
+    :param `name`: 课程名称
+    :param `teacher`: 教师名称
+    :param `credit`: 学分
+    :param `period`: 学时
+    :param `time`: 开课时间
+    :param `department`: 开课院系
+    :param `type`: 课程类型
+    :param `selection`: 选课情况
+    :param `link`: 详细信息指向的表
     """
 
     id_ = models.CharField(
@@ -166,20 +163,23 @@ class MainCourses(models.Model):
     time = models.CharField(max_length=64, name="time")  # 开课时间
     department = models.CharField(max_length=64, name="department")  # 开课院系
     type_ = models.CharField(max_length=64, name="type")  # 课程类型
-    selection = models.JSONField(name="selection")  # 选课情况
+    selection = models.JSONField(name="selection", blank=True, default={})  # 选课情况
     # 内部结构：
     # {
     #     "total": <total: int>,  # 总人数
-    #     "bx1": <b1: int>,  # 必选1志愿人数
-    #     "bx2": <b2: int>,  # 必选2志愿人数
-    #     "bx3": <b3: int>,  # 必选3志愿人数
-    #     "xx1": <x1: int>,  # 限选1志愿人数
-    #     "xx2": <x2: int>,  # 限选2志愿人数
-    #     "xx3": <x3: int>,  # 限选3志愿人数
-    #     "rx0": <r0: int>,  # 任选0志愿人数（特殊优先志愿）
-    #     "rx1": <r1: int>,  # 任选1志愿人数
-    #     "rx2": <r2: int>,  # 任选2志愿人数
-    #     "rx3": <r3: int>,  # 任选3志愿人数
+    #     "b1": <b1: int>,  # 必选1志愿人数
+    #     "b2": <b2: int>,  # 必选2志愿人数
+    #     "b3": <b3: int>,  # 必选3志愿人数
+    #     "x1": <x1: int>,  # 限选1志愿人数
+    #     "x2": <x2: int>,  # 限选2志愿人数
+    #     "x3": <x3: int>,  # 限选3志愿人数
+    #     "r0": <r0: int>,  # 任选0志愿人数（特殊优先志愿）
+    #     "r1": <r1: int>,  # 任选1志愿人数
+    #     "r2": <r2: int>,  # 任选2志愿人数
+    #     "r3": <r3: int>,  # 任选3志愿人数
+    #     "t1": <t1: int>,  # 体育1志愿人数
+    #     "t2": <t2: int>,  # 体育2志愿人数
+    #     "t3": <t3: int>,  # 体育3志愿人数
     # }
 
     # 详细信息指向表

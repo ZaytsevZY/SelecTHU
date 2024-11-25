@@ -34,7 +34,9 @@ def get_curriculum(id_: str):
         curriculum = {}
         if user.user_curriculum:
             user_curriculum_id = user.user_curriculum
-            curriculum = models.Curriculum.objects.get(id=user_curriculum_id).values("courses")
+            curriculum = models.Curriculum.objects.get(id=user_curriculum_id).values(
+                "courses"
+            )
 
         # 返回结果
         return {"status": 200, "curriculum": curriculum}
@@ -92,10 +94,12 @@ def get_user(id_: str):
         curriculum = {}
         if user.user_curriculum:
             user_curriculum_id = user.user_curriculum
-            user_curriculum = models.Curriculum.objects.filter(id=user_curriculum_id).values("courses")
+            user_curriculum = models.Curriculum.objects.filter(
+                id=user_curriculum_id
+            ).values("courses")
             if user_curriculum.exists():
                 curriculum = user_curriculum.first()
-            
+
         # 返回结果
         return {
             "status": 200,
@@ -119,7 +123,7 @@ def get_courses(count: int = -1):
     """
     if isinstance(count, int) is False:
         return const.RESPONSE_400
-    
+
     try:
         courses = []
         if count == -1:
@@ -142,7 +146,7 @@ def get_courses(count: int = -1):
             # 判断count是否合法（是否超过数据库中的数据数量）
             if count <= 0 or count > models.MainCourses.objects.count():
                 return const.RESPONSE_400
-            
+
             # 查询数据库
             courses = models.MainCourses.objects.all().values(
                 "id",
@@ -301,13 +305,12 @@ def get_course_detail_by_info(code: str, name: str, teacher: str):
     """
     if code is None or name is None or teacher is None:
         return const.RESPONSE_400
-    
+
     try:
         id_ = cal_course_id(code, name, teacher)
         # 查询数据库
-        course = (
-            models.CoursesDetails.objects.filter(id=id_)
-            .values("id", "info", "score", "comments")
+        course = models.CoursesDetails.objects.filter(id=id_).values(
+            "id", "info", "score", "comments"
         )
 
         # 课程不存在
@@ -317,7 +320,7 @@ def get_course_detail_by_info(code: str, name: str, teacher: str):
         # 如果有多个结果，说明发生错误
         if course.count() > 1:
             return const.RESPONSE_500
-        
+
         details = course.first()
 
         return {"status": 200, "details": details}
@@ -335,12 +338,11 @@ def get_course_detail_by_id(id_: str):
     """
     if id_ is None:
         return const.RESPONSE_400
-    
+
     try:
         # 查询数据库
-        course = (
-            models.CoursesDetails.objects.filter(id=id_)
-            .values("id", "info", "score", "comments")
+        course = models.CoursesDetails.objects.filter(id=id_).values(
+            "id", "info", "score", "comments"
         )
 
         # 课程不存在
