@@ -2,8 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('backend-status', views.backend_status, name='backend_status'),  # 测试接口
     # 登录和登出
-    path('login-default/', views.login_default, name='login'),  # 登录
+    path('login-default/', views.login_default, name='login_default'),  # 登录
     path('login/', views.login, name='login'),  # 登录
     path('logout/<str:user_id>/', views.logout, name='logout'),  # 登出
 

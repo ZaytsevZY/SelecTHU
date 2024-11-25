@@ -9,6 +9,13 @@ from utils import generate_jwt, login_required
 
 from db.v1 import utils as db_utils
 
+@api_view(["GET"])
+def backend_status(request):
+    """
+    后端状态检查
+    """
+    return Response({"status": 200}, status=status.HTTP_200_OK)
+
 @api_view(["POST"])
 def login_default(request):
     """
