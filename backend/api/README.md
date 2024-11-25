@@ -82,13 +82,28 @@
       "courses-favorite": [
         {
           "course_id": <str>,
-          "selection-type": <str>
+          "code": <str>,
+          "name": <str>,
+          "teacher": <str>,
+          "credit": <int>,
+          "period": <int>,
+          "time": <dict>,
+          "department": <str>,
+          "type": <str>,
         },
         ...
       ],
       "courses-decided": [
         {
-          "course_id": <str>
+          "course_id": <str>,
+          "code": <str>,
+          "name": <str>,
+          "teacher": <str>,
+          "credit": <int>,
+          "period": <int>,
+          "time": <dict>,
+          "department": <str>,
+          "selection-type": <str>,
         },
         ...
       ],
@@ -161,7 +176,7 @@
   ```json
   {
     "status": <int>, 
-    "curriculum": <list>
+    "curriculum": <dict>
   }
   ```
 - 说明：获取用户培养方案
@@ -190,7 +205,7 @@
   ```
 - 说明：根据筛选条件返回所有符合条件课程的基本信息
 - 错误码：
-  - **400 Bad Request**：无效的查询参数（例如，`credit`应为整数）。
+  - **400 Bad Request**：无效的查询参数
   - **500 Internal Server Error**：筛选操作失败。
 
 4. **获取课程详细信息**<span id="get_course_detail"></span>
@@ -222,7 +237,7 @@
 - 请求类型：`POST`
 - 请求参数：
   - `course_id<str>`：课程id
-  - `cond<str>`：目标状态（在"decided", "favorite", "dismiss"三选一）
+  - `condition<str>`：目标状态（在"decided", "favorite", "dismiss"三选一）
 - 返回值：
   ```json
   {
@@ -246,7 +261,14 @@
     "courses-decided": [
       {
         "course_id": <str>,
-        "selection-type": <str>
+        "code": <str>,
+        "name": <str>,
+        "teacher": <str>,
+        "credit": <int>,
+        "period": <int>,
+        "time": <dict>,
+        "department": <str>,
+        "selection-type": <str>,
       },
       ...
     ]
@@ -266,7 +288,14 @@
     "status": <int>, 
     "courses-favorite": [
       {
-        "course_id": <str>
+        "course_id": <str>,
+        "code": <str>,
+        "name": <str>,
+        "teacher": <str>,
+        "credit": <int>,
+        "period": <int>,
+        "time": <dict>,
+        "department": <str>,
       },
       ...
     ]
@@ -295,36 +324,24 @@
   
 ### 附加说明
 #### 一些数据的内部结构
-  - course_main（用到的接口：/user/, /courses/, /courses-decided/, /courses-favorite/）
-    ```json
-    {
-      "course_id": <str>,
-      "code": <str>,
-      "name": <str>,
-      "teacher": <str>,
-      "credit": <int>,
-      "period": <int>,
-      "time": <dict>,
-      "department": <str>,
-      "type": <str>,
-      "selection": <dict>,
-    }
-    ```
-
   - selection（course_main，course_detail中）
     ```json
     {
       "total": <int>,
-      "bx1": <int>, 
-      "bx2": <int>, 
-      "bx3": <int>, 
-      "xx1": <int>, 
-      "xx2": <int>, 
-      "xx3": <int>, 
-      "rx0": <int>,  
-      "rx1": <int>,
-      "rx2": <int>,
-      "rx3": <int>,
+      "b1": <int>, 
+      "b2": <int>, 
+      "b3": <int>, 
+      "x1": <int>, 
+      "x2": <int>, 
+      "x3": <int>, 
+      "r0": <int>,  
+      "r1": <int>,
+      "r2": <int>,
+      "r3": <int>,
+      "t0": <int>,
+      "t1": <int>,
+      "t2": <int>,
+      "t3": <int>,
     }
     ```
 
