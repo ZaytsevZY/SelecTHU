@@ -6,6 +6,9 @@
 from database import *
 
 
+"""添加类操作"""
+
+
 # 新建用户
 def add_user(id_: str, curriculum: dict = None) -> dict:
     """
@@ -15,7 +18,7 @@ def add_user(id_: str, curriculum: dict = None) -> dict:
     :param id_: 用户id（学号）
     :param curriculum: 培养方案
 
-    :return: 返回的信息
+    :return: 执行结果
     """
     # 检查输入合法性
     if isinstance(id_, str) is False:
@@ -51,13 +54,18 @@ def add_user(id_: str, curriculum: dict = None) -> dict:
         return const.RESPONSE_500
 
 
+# TODO:添加课程信息
+def add_course(course: dict):
+    pass
+
+
 # 添加培养方案
 def add_curriculum(curriculum: dict) -> dict:
     """
     添加培养方案
 
     :param curriculum: 培养方案
-    :return: 返回的信息
+    :return: 执行结果
     """
     # 检查输入合法性
     if isinstance(curriculum, dict) is False:
@@ -89,7 +97,7 @@ def add_course_to_decided(user_id: str, course_id: str, selection_type: str = ""
     :param user_id: 用户id
     :param course_id: 课程识别码
     :param selection_type: 选课类型
-    :return: 返回的信息
+    :return: 执行结果
     """
     # 检查输入合法性
     if isinstance(user_id, str) is False or isinstance(course_id, str) is False:
@@ -104,10 +112,12 @@ def add_course_to_decided(user_id: str, course_id: str, selection_type: str = ""
         user = models.User.objects.get(user_id=user_id)
         for course in user.user_decided:
             if course["course_id"] == course_id:
-            # 返回结果：资源冲突（课程已存在）
+                # 返回结果：资源冲突（课程已存在）
                 return const.RESPONSE_409
 
-        user.user_decided.append({"course_id": course_id, "selection_type": selection_type})
+        user.user_decided.append(
+            {"course_id": course_id, "selection_type": selection_type}
+        )
         user.save()
 
         # 返回结果：添加成功
@@ -120,10 +130,10 @@ def add_course_to_decided(user_id: str, course_id: str, selection_type: str = ""
 def add_course_to_favorite(user_id: str, course_id: str):
     """
     添加用户备选课程
-    
+
     :param user_id: 用户id
     :param course_id: 课程识别码
-    :return: 返回的信息
+    :return: 执行结果
     """
     # 检查输入合法性
     if isinstance(user_id, str) is False or isinstance(course_id, str) is False:
@@ -149,7 +159,113 @@ def add_course_to_favorite(user_id: str, course_id: str):
         return const.RESPONSE_500
 
 
-# 移除已选课程
+# 添加课程评价和评分
+def add_course_comment(course_id: str, comment: dict):
+    """
+    添加课程评价和评分
+
+    :param course_id: 课程识别码
+    :param comment: 课程评价（结构：
+    ```
+    {
+        "comment_time": <str>,
+        "comment_score": <int>,
+        "comment": <str>
+    }
+    ```
+    ）
+
+    :return: 执行结果
+    """
+    if isinstance(course_id, str) is False or isinstance(comment, dict) is False:
+        return const.RESPONSE_400
+
+    try:
+        # 检查传入的课程是否存在
+        if not models.CoursesDetails.objects.filter(id=course_id).exists():
+            return const.RESPONSE_404
+
+        # 检查传入的评论格式是否正确
+        if (
+            "comment_time" not in comment
+            or "comment_score" not in comment
+            or "comment" not in comment
+        ):
+            return const.RESPONSE_400
+
+        if (
+            not isinstance(comment["comment_time"], str)
+            or not isinstance(comment["comment_score"], int)
+            or not isinstance(comment["comment"], str)
+        ):
+            return const.RESPONSE_400
+
+        if (
+            comment["comment_score"] < const.COMMENT_SCORE_MIN
+            or comment["comment_score"] > const.COMMENT_SCORE_MAX
+        ):
+            return const.RESPONSE_400
+
+        details = models.CoursesDetails.objects.get(id=course_id)
+
+        comment_score = comment["comment_score"]
+        cnt = 1
+        for c in details.comments:
+            comment_score += c["comment_score"]
+            cnt += 1
+        
+        # 保留两位小数
+        details.score = round(comment_score / cnt, 2)
+        details.comments.append(comment)
+        details.save()
+
+        return {"status": 200, "msg": "add course comment successfully"}
+    except Exception as e:
+        return const.RESPONSE_500
+
+
+"""修改类操作"""
+
+
+# TODO:修改志愿分配
+def change_course_level():
+    pass
+
+
+# TODO:修改用户信息
+def change_user_info(id_: str, nickname: str = None, avatar: str = None):
+    pass
+
+
+# 修改课程简要信息
+def change_course_main():
+    """
+    修改课程简要信息
+
+    经考虑，该接口暂不实现
+    """
+    return const.RESPONSE_501
+
+
+# 修改课程详细信息
+def change_course_detail():
+    """
+    修改课程详细信息
+
+    经考虑，该接口暂不实现
+    """
+    return const.RESPONSE_501
+
+
+"""删除类操作"""
+
+
+# TODO:移除用户
+def remove_user(id_: str):
+    pass
+
+
+# TODO:移除已选课程
 def remove_course_from_decided(user_id: str, course_id: str):
     pass
 
@@ -158,10 +274,10 @@ def remove_course_from_decided(user_id: str, course_id: str):
 def remove_course_from_favorite(user_id: str, course_id: str):
     """
     移除用户备选课程
-    
+
     :param user_id: 用户id
     :param course_id: 课程识别码
-    :return: 返回的信息
+    :return: 执行结果
     """
     # 检查输入合法性
     if isinstance(user_id, str) is False or isinstance(course_id, str) is False:
@@ -187,49 +303,58 @@ def remove_course_from_favorite(user_id: str, course_id: str):
         return const.RESPONSE_500
 
 
-# 修改志愿分配
-def change_course_level():
-    pass
+# 删除指定课程的所有课程评价和评分
+def remove_all_course_comment(course_id: str):
+    """
+    删除指定课程的所有课程评价和评分（根据课程识别码）
 
+    :param course_id: 课程识别码
+    :return: 执行结果
+    """
+    # 检查输入合法性
+    if isinstance(course_id, str) is False:
+        return const.RESPONSE_400
 
-# 修改用户信息
-def change_user_info(id_: str, nickname: str = None, avatar: str = None):
-    pass
+    try:
+        # 检查是否存在
+        if not models.CoursesDetails.objects.filter(id=course_id).exists():
+            return const.RESPONSE_404
 
+        # 删除
+        details = models.CoursesDetails.objects.get(id=course_id)
+        details.score = -1
+        details.comments = []
+        details.save()
 
-# 移除用户
-def remove_user(id_: str):
-    pass
-
-
-# 添加课程评价和评分
-def add_course_comment():
-    pass
-
-
-# 删除所有课程评价和评分
-def remove_all_course_comment():
-    pass
-
-
-# 添加课程信息
-def add_course():
-    pass
+        # 返回结果
+        return {"status": 200, "msg": "remove all course comment successfully"}
+    except Exception as e:
+        return const.RESPONSE_500
 
 
 # 删除课程信息
-def remove_course():
-    pass
+def remove_course(course_id: str):
+    """
+    删除课程信息（根据课程识别码）
 
+    :param course_id: 课程识别码
+    :return: 执行结果
+    """
+    if isinstance(course_id, str) is False:
+        return const.RESPONSE_400
 
-# 修改课程简要信息
-def change_course_main():
-    pass
+    try:
+        # 检查是否存在
+        if not models.MainCourses.objects.filter(id=course_id).exists():
+            return const.RESPONSE_404
 
+        # 删除
+        models.MainCourses.objects.filter(id=course_id).delete()
 
-# 修改课程详细信息
-def change_course_detail():
-    pass
+        # 返回结果
+        return {"status": 200, "msg": "remove course successfully"}
+    except Exception as e:
+        return const.RESPONSE_500
 
 
 # 删除培养方案（根据id）
@@ -238,7 +363,7 @@ def remove_curriculum_by_id(id_: str):
     删除培养方案（根据id）
 
     :param id_: 培养方案id
-    :return: 返回的信息
+    :return: 执行结果
     """
     # 检查输入合法性
     if isinstance(id_, str) is False:
@@ -258,13 +383,13 @@ def remove_curriculum_by_id(id_: str):
         return const.RESPONSE_500
 
 
-# 删除培养方案（根据课程）
+# 删除培养方案（根据培养方案内容）
 def remove_curriculum_by_curriculum(curriculum: dict):
     """
-    删除培养方案（根据课程）
+    删除培养方案（根据培养方案内容）
 
     :param curriculum: 培养方案
-    :return: 返回的信息
+    :return: 执行结果
     """
     # 检查输入合法性
     if isinstance(curriculum, dict) is False:

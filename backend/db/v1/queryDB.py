@@ -20,7 +20,7 @@ def get_curriculum(id_: str):
     查询培养方案
 
     :param `id_`: 用户id（不叫id是避免与关键字冲突）
-    :return: 返回的信息（在请求正确的情况下包含培养方案 `curriculum<type = list>` ）
+    :return: 返回数据（在请求正确的情况下包含培养方案 `curriculum<type = list>` ）
     """
 
     # 检查输入合法性
@@ -48,7 +48,7 @@ def get_curriculum_existance(curriculum: dict):
     查询培养方案是否存在
 
     :param `curriculum`: 培养方案
-    :return: 返回的信息（在请求正确的情况下包含布尔值 `value<type = bool>` ）
+    :return: 返回数据（在请求正确的情况下包含布尔值 `value<type = bool>` ）
     """
 
     # 检查输入合法性
@@ -71,7 +71,7 @@ def get_user(id_: str):
     查询用户信息
 
     :param `id_`: 用户id（学号）
-    :return: 返回的信息
+    :return: 返回数据
     （包含用户信息
     `nickname<type = str>`，
     `avatar<type = str>` （为图片路径），
@@ -115,7 +115,7 @@ def get_courses(count: int = -1):
     查询课程列表（指定数量）
 
     :param `count`: 查询数量（默认为-1，即全部查询）
-    :return: 返回的信息（在请求正确的情况下包含字典列表 `courses<type = list[dict]>` ）
+    :return: 返回数据（在请求正确的情况下包含字典列表 `courses<type = list[dict]>` ）
     """
     if isinstance(count, int) is False:
         return const.RESPONSE_400
@@ -192,7 +192,7 @@ def get_course(
     :param `type_`: 课程类型
     :param `search_mode`: 搜索模式（默认为`exact` - 精确搜索，可选： `fuzzy` - 模糊搜索，`exclude` - 排除搜索）
 
-    :return: 返回的信息（包含字典 `course<type = list[dict]>` ）
+    :return: 返回数据（包含字典 `course<type = list[dict]>` ）
     """
     if search_mode not in const.SEARCH_MODE:
         return const.RESPONSE_400
@@ -297,7 +297,7 @@ def get_course_detail_by_info(code: str, name: str, teacher: str):
     :param `name`: 课程名
     :param `teacher`: 教师名
 
-    :return: 返回的信息（包含 详细信息 `details<type = dict>` ）
+    :return: 返回数据（包含 详细信息 `details<type = dict>` ）
     """
     if code is None or name is None or teacher is None:
         return const.RESPONSE_400
@@ -331,7 +331,7 @@ def get_course_detail_by_id(id_: str):
     查询课程详细信息
 
     :param `id_`: 课程id
-    :return: 返回的信息（包含 详细信息 `details<type = dict>` ）
+    :return: 返回数据（包含 详细信息 `details<type = dict>` ）
     """
     if id_ is None:
         return const.RESPONSE_400

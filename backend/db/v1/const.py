@@ -25,22 +25,9 @@ SALT: tuple = tuple(os.getenv(f"SALT_{i}", "") for i in range(1, _SALT_COUNT + 1
 SEARCH_MODE: tuple = ("exact", "exclude", "fuzzy")
 
 
-# 周次定义
-class TIME_WEEK:
-    ODD: int = (1,)  # 单周
-    EVEN: int = (2,)  # 双周
-    OTHER: int = (3,)  # 其他
-
-
-# 志愿类型定义
-# 一个完整的志愿应该是两位字符串，第一位为志愿类型，第二位为志愿级别
-# 如：b0、x1、r2、t3
-class SELECTION_TYPE:
-    ST_B: str = ("b",)  # 必修
-    ST_X: str = ("x",)  # 限选
-    ST_R: str = ("r",)  # 任选
-    ST_T: str = ("t",)  # 体育
-    LEVEL: tuple = ("0", "1", "2", "3")  # 志愿级别
+# 评分范围定义
+COMMENT_SCORE_MIN: int = 0  # 最低评分
+COMMENT_SCORE_MAX: int = 7  # 最高评分
 
 
 # 响应
@@ -63,3 +50,26 @@ RESPONSE_500: dict = {
     "status": 500,
     "msg": "Internal Server Error",
 }  # 500错误响应：服务器内部错误
+
+RESPONSE_501: dict = {
+    "status": 501,
+    "msg": "Not Implemented",
+}  # 501错误响应：未实现
+
+
+# 周次定义
+class TIME_WEEK:
+    ODD: int = (1,)  # 单周
+    EVEN: int = (2,)  # 双周
+    OTHER: int = (3,)  # 其他
+
+
+# 志愿类型定义
+# 一个完整的志愿应该是两位字符串，第一位为志愿类型，第二位为志愿级别
+# 如：b0、x1、r2、t3
+class SELECTION_TYPE:
+    ST_B: str = ("b",)  # 必修
+    ST_X: str = ("x",)  # 限选
+    ST_R: str = ("r",)  # 任选
+    ST_T: str = ("t",)  # 体育
+    LEVEL: tuple = ("0", "1", "2", "3")  # 志愿级别
