@@ -8,17 +8,25 @@ from app.settings import BASE_DIR
 from typing import Final
 
 import dotenv
+import logging
 import os
 
 
 dotenv.load_dotenv(BASE_DIR / ".env")
+logger: Final[logging.Logger] = logging.getLogger("db_v1_logger")
+logging.basicConfig(
+    filename=BASE_DIR / "logs" / "db.log",
+    level=logging.INFO,
+    format="(%(asctime)s) [%(type)s] %(message)s",
+)
+
 
 # 培养方案键值（对应必限任）
 CURRICULUM_KEYS: Final[tuple] = ("0", "1", "2")
 
 # 哈希盐字符串
 # 放入.env文件中
-# 11.22迭代：将SALT放入.env文件中并动态加载
+# 将SALT放入.env文件中并动态加载
 _SALT_COUNT: Final[int] = int(os.getenv("SALT_COUNT", 7))
 SALT: Final[tuple] = tuple(
     os.getenv(f"SALT_{i}", "") for i in range(1, _SALT_COUNT + 1)
@@ -58,6 +66,25 @@ RESPONSE_501: Final[dict] = {
 }  # 501错误响应：未实现
 
 
+# 选课情况（空状态）
+SELECTION_BLANK: Final[dict] = {
+    "total": 0,
+    "b1": 0,
+    "b2": 0,
+    "b3": 0,
+    "x1": 0,
+    "x2": 0,
+    "x3": 0,
+    "r0": 0,
+    "r1": 0,
+    "r2": 0,
+    "r3": 0,
+    "t1": 0,
+    "t2": 0,
+    "t3": 0,
+}
+
+
 # 周次定义
 class TIME_WEEK:
     ODD: Final[int] = (1,)  # 单周
@@ -75,23 +102,6 @@ class SELECTION_TYPE:
     ST_T: Final[str] = ("t",)  # 体育
     LEVEL: Final[tuple] = ("0", "1", "2", "3")  # 志愿级别
 
-    BLANK: Final[dict] = {
-        "total": 0,
-        "b1": 0,
-        "b2": 0,
-        "b3": 0,
-        "x1": 0,
-        "x2": 0,
-        "x3": 0,
-        "r0": 0,
-        "r1": 0,
-        "r2": 0,
-        "r3": 0,
-        "t1": 0,
-        "t2": 0,
-        "t3": 0,
-    }
-
     @staticmethod
     def in_type(selection: str) -> bool:
         """
@@ -101,7 +111,9 @@ class SELECTION_TYPE:
         :return: 是否合法
         """
         return (
-            selection[0]
+            isinstance(selection, str)
+            and len(selection) == 2
+            and selection[0]
             in (
                 SELECTION_TYPE.ST_B
                 + SELECTION_TYPE.ST_X
@@ -110,3 +122,11 @@ class SELECTION_TYPE:
             )
             and selection[1] in SELECTION_TYPE.LEVEL
         )
+
+
+# 日志类型定义
+class LOGGING_TYPE:
+    ERROR: Final[dict] = {"type": "Error"}
+    WARNING: Final[dict] = {"type": "Warning"}
+    INFO: Final[dict] = {"type": "Info"}
+    DEBUG: Final[dict] = {"type": "Debug"}

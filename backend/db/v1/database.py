@@ -2,6 +2,7 @@ import db.v1.const as const
 import db.v1.models as models
 
 import hashlib
+import time
 
 
 # 计算培养方案id
@@ -49,6 +50,7 @@ def cal_curriculum_id(courses: dict) -> str:
         raise  # 计算错误
 
 
+# 计算课程id
 def cal_course_id(code: str, name: str, teacher: str) -> str:
     """
     计算课程id（使用课程代码、课程名称、教师名作为依据）
@@ -66,9 +68,7 @@ def cal_course_id(code: str, name: str, teacher: str) -> str:
 
         # 课程信息
         # 使用code, name, teacher字段作为计算id的依据
-        source_str = (
-            f"{code}{const.SALT[5]}{name}{const.SALT[4]}{teacher}"
-        )
+        source_str = f"{code}{const.SALT[5]}{name}{const.SALT[4]}{teacher}"
 
         # 创建sha256对象
         sha256 = hashlib.sha256()  # 创建sha256对象
@@ -78,3 +78,16 @@ def cal_course_id(code: str, name: str, teacher: str) -> str:
         return id_
     except:
         raise  # 计算错误
+
+
+# 获取正则化时间信息
+def get_time_str() -> str:
+    """
+    获取正则化时间信息
+
+    :return: 正则化时间信息
+    """
+    try:
+        return time.strftime(r"(%Y-%m-%d %H:%M:%S)", time.localtime())
+    except:
+        return r"(Time Error)"
