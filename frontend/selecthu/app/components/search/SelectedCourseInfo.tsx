@@ -14,46 +14,43 @@ import {
 import { useState } from "react";
 
 interface Course {
+  id: string;
   name: string;
   department: string;
   time: string;
   instructor: string;
   teachingInfo: string;
   teacherInfo: string;
+  comments: string[];
 }
 
-const SelectedCourseInfo = () => {
-  // 假设有一个选中的课程对象
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>({
-    // 示例数据
-    name: "数据结构",
-    department: "计算机学院",
-    time: "周一 10:00-12:00",
-    instructor: "张三",
-    teachingInfo: "教室：软件楼101",
-    teacherInfo: "电子邮箱：zhangsan@example.com",
-  });
-  const [comments, setComments] = useState<string[]>([
-    "这门课内容丰富，非常有趣！",
-    "老师讲解清晰，助教也很负责任。",
-  ]);
+interface SelectedCourseInfoProps {
+  course: Course | null;
+  onAddComment: (courseId: string, comment: string) => void;
+}
+
+const SelectedCourseInfo: React.FC<SelectedCourseInfoProps> = ({
+  course,
+  onAddComment,
+}) => {
   const [newComment, setNewComment] = useState("");
 
   // 处理评论发送
   const handleSendComment = () => {
-    if (newComment.trim() !== "") {
-      setComments([...comments, newComment.trim()]);
+    if (newComment.trim() !== "" && course) {
+      onAddComment(course.id, newComment.trim());
       setNewComment("");
     }
   };
 
-  if (!selectedCourse) {
+  if (!course) {
     return (
       <Box
         bg={useColorModeValue("white", "gray.800")}
         p={4}
         borderRadius="md"
         boxShadow="md"
+        height="100%"
       >
         <Text>请选择一门课程以查看详细信息。</Text>
       </Box>
@@ -73,27 +70,27 @@ const SelectedCourseInfo = () => {
         <Heading size="md">课程信息</Heading>
         <Text>
           <strong>课程名称：</strong>
-          {selectedCourse.name}
+          {course.name}
         </Text>
         <Text>
           <strong>开课院系：</strong>
-          {selectedCourse.department}
+          {course.department}
         </Text>
         <Text>
           <strong>开课时间：</strong>
-          {selectedCourse.time}
+          {course.time}
         </Text>
         <Text>
           <strong>授课教师：</strong>
-          {selectedCourse.instructor}
+          {course.instructor}
         </Text>
         <Text>
           <strong>授课信息：</strong>
-          {selectedCourse.teachingInfo}
+          {course.teachingInfo}
         </Text>
         <Text>
           <strong>教师信息：</strong>
-          {selectedCourse.teacherInfo}
+          {course.teacherInfo}
         </Text>
       </VStack>
 
@@ -103,7 +100,7 @@ const SelectedCourseInfo = () => {
       <VStack align="start" spacing={4} mt={4}>
         <Heading size="md">课程评价</Heading>
         {/* 展示已有评价 */}
-        {comments.map((comment, index) => (
+        {course.comments.map((comment, index) => (
           <Box
             key={index}
             bg={useColorModeValue("gray.100", "gray.700")}
@@ -116,7 +113,7 @@ const SelectedCourseInfo = () => {
         ))}
 
         {/* 添加评价 */}
-        <VStack align="start" w="100%">
+        <VStack align="start" w="100%" spacing={2}>
           <Input
             placeholder="请输入评论内容"
             value={newComment}

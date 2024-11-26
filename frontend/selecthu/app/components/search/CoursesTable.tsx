@@ -9,20 +9,43 @@ import {
   Tr,
   Th,
   Td,
-  Button,
   IconButton,
   Text,
   Select,
   Flex,
   Stack,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { useState } from "react";
-import { useColorModeValue } from '@chakra-ui/react';
 
-const CoursesTable = () => {
-  // 假设有一个课程列表
-  const [courses, setCourses] = useState<any[]>([]); // 替换为实际的课程数据类型
+interface Course {
+  id: string;
+  courseNumber: string;      // 新增：课程号
+  sequenceNumber: string;    // 新增：课序号
+  name: string;
+  credits: number;           // 新增：学分
+  department: string;
+  time: string;
+  instructor: string;
+  teachingInfo: string;
+  teacherInfo: string;
+  comments: string[];
+}
+
+interface CoursesTableProps {
+  courses: Course[];
+  onSelectCourse: (courseId: string) => void;
+  selectedCourseId: string | null;
+  onAddCourse: (courseId: string) => void; // 添加 onAddCourse
+}
+
+const CoursesTable: React.FC<CoursesTableProps> = ({
+  courses,
+  onSelectCourse,
+  selectedCourseId,
+  onAddCourse, // 接收 onAddCourse
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [coursesPerPage, setCoursesPerPage] = useState(20);
   const totalPages = Math.ceil(courses.length / coursesPerPage);
@@ -34,53 +57,81 @@ const CoursesTable = () => {
 
   // 处理课程添加
   const handleAddCourse = (courseId: string) => {
-    // 实现添加课程到选中列表的逻辑
-    console.log("添加课程ID:", courseId);
+    onAddCourse(courseId);
   };
 
   return (
-    <Box bg={useColorModeValue("white", "gray.800")} p={4} borderRadius="md" boxShadow="md">
+    <Box
+      bg={useColorModeValue("white", "gray.800")}
+      p={4}
+      borderRadius="md"
+      boxShadow="md"
+    >
       {/* 课程表标题 */}
       <Text fontSize="lg" mb={4} fontWeight="bold">
         课程列表
       </Text>
 
       {/* 课程表 */}
-      <Table variant="simple">
-        <Thead>
+      <Table variant="simple" border="1px" borderColor={useColorModeValue("gray.200", "gray.700")}>
+        <Thead bg={useColorModeValue("gray.100", "gray.700")}>
           <Tr>
-            <Th>操作</Th>
-            <Th>课程名称</Th>
-            <Th>开课院系</Th>
-            <Th>开课时间</Th>
-            <Th>授课教师</Th>
-            <Th>选课人数情况</Th>
+            <Th borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>操作</Th>
+            <Th borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>课程号-课序号</Th>
+            <Th borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>课程名称</Th>
+            <Th borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>学分</Th>
+            <Th borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>开课院系</Th>
+            <Th borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>授课教师</Th>
+            <Th borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>上课时间</Th>
+            <Th>选课情况</Th>
           </Tr>
         </Thead>
         <Tbody>
           {currentCourses.map((course) => (
-            <Tr key={course.id}>
-              <Td>
+            <Tr
+              key={course.id}
+              cursor="pointer"
+              bg={
+                selectedCourseId === course.id
+                  ? useColorModeValue("gray.100", "gray.700")
+                  : "transparent"
+              }
+              onClick={() => onSelectCourse(course.id)}
+              _hover={{ bg: useColorModeValue("gray.50", "gray.600") }}
+            >
+              <Td borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>
                 <IconButton
                   icon={<AddIcon />}
                   size="sm"
                   colorScheme="green"
                   aria-label="添加课程"
-                  onClick={() => handleAddCourse(course.id)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // 阻止事件冒泡以避免触发行点击
+                    handleAddCourse(course.id);
+                  }}
                 />
               </Td>
-              <Td>{course.name}</Td>
-              <Td>{course.department}</Td>
-              <Td>{course.time}</Td>
-              <Td>{course.instructor}</Td>
+              <Td borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>
+                {course.courseNumber}-{course.sequenceNumber}
+              </Td>
+              <Td borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>
+                {course.name}
+              </Td>
+              <Td borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>
+                {course.credits}
+              </Td>
+              <Td borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>
+                {course.department}
+              </Td>
+              <Td borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>
+                {course.instructor}
+              </Td>
+              <Td borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>
+                {course.time}
+              </Td>
               <Td>
-                {/* 选课人数情况展示为色带 */}
-                <Box
-                  w="100px"
-                  h="8px"
-                  bg="green.400"
-                  borderRadius="md"
-                />
+                {/* 选课人数情况展示为色带（示例，实际可根据数据调整） */}
+                <Box w="100px" h="8px" bg="green.400" borderRadius="md" />
               </Td>
             </Tr>
           ))}
@@ -90,27 +141,29 @@ const CoursesTable = () => {
       {/* 分页和每页显示数量选择 */}
       <Flex justifyContent="space-between" alignItems="center" mt={4}>
         {/* 分页信息 */}
-        <Text>
-          共 {totalPages} 页
-        </Text>
+        <Text>共 {totalPages} 页</Text>
 
         {/* 分页控制 */}
         <Stack direction="row" spacing={4} align="center">
-          <Button
+          <IconButton
+            aria-label="上一页"
+            icon={<Text>&lt;</Text>}
             size="sm"
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.max(prev - 1, 1))
+            }
             isDisabled={currentPage === 1}
-          >
-            上一页
-          </Button>
+          />
           <Text>第 {currentPage} 页</Text>
-          <Button
+          <IconButton
+            aria-label="下一页"
+            icon={<Text>&gt;</Text>}
             size="sm"
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             isDisabled={currentPage === totalPages}
-          >
-            下一页
-          </Button>
+          />
           <Select
             width="100px"
             value={coursesPerPage}
