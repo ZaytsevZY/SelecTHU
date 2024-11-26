@@ -1,4 +1,5 @@
 // app/components/search/SelectedCourseInfo.tsx
+
 "use client";
 
 import {
@@ -12,17 +13,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useState } from "react";
-
-interface Course {
-  id: string;
-  name: string;
-  department: string;
-  time: string;
-  instructor: string;
-  teachingInfo: string;
-  teacherInfo: string;
-  comments: string[];
-}
+import { Course } from "../../types/course"; // 从统一接口导入
 
 interface SelectedCourseInfoProps {
   course: Course | null;
@@ -34,6 +25,9 @@ const SelectedCourseInfo: React.FC<SelectedCourseInfoProps> = ({
   onAddComment,
 }) => {
   const [newComment, setNewComment] = useState("");
+  const courceInfoBg = useColorModeValue("white", "gray.800");
+  const courceCommentBg = useColorModeValue("gray.100", "gray.700");
+
 
   // 处理评论发送
   const handleSendComment = () => {
@@ -46,7 +40,7 @@ const SelectedCourseInfo: React.FC<SelectedCourseInfoProps> = ({
   if (!course) {
     return (
       <Box
-        bg={useColorModeValue("white", "gray.800")}
+        bg={courceInfoBg}
         p={4}
         borderRadius="md"
         boxShadow="md"
@@ -59,7 +53,7 @@ const SelectedCourseInfo: React.FC<SelectedCourseInfoProps> = ({
 
   return (
     <Box
-      bg={useColorModeValue("white", "gray.800")}
+      bg={courceInfoBg}
       p={4}
       borderRadius="md"
       boxShadow="md"
@@ -82,7 +76,7 @@ const SelectedCourseInfo: React.FC<SelectedCourseInfoProps> = ({
         </Text>
         <Text>
           <strong>授课教师：</strong>
-          {course.instructor}
+          {course.teacher} {/* 使用 teacher */}
         </Text>
         <Text>
           <strong>授课信息：</strong>
@@ -103,7 +97,7 @@ const SelectedCourseInfo: React.FC<SelectedCourseInfoProps> = ({
         {course.comments.map((comment, index) => (
           <Box
             key={index}
-            bg={useColorModeValue("gray.100", "gray.700")}
+            bg={courceCommentBg}
             p={2}
             borderRadius="md"
             w="100%"

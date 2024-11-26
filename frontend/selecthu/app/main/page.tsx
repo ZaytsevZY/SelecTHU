@@ -24,6 +24,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 // 引入自定义拖拽层
 import CustomDragLayer from "../components/main/CustomDragLayer";
 
+// 引入统一的 Course 接口
 import { Course } from "../types/course";
 
 // 示例课程数据
@@ -39,6 +40,16 @@ const sampleCourses: Course[] = [
       { day: 1, start: 1, duration: 2 }, // 周一1-2节
       { day: 3, start: 3, duration: 3 }, // 周三3-5节
     ],
+    department: "数学与统计学院",
+    time: "周一 08:00-10:00 / 周三 09:00-12:00",
+    teachingInfo: "教室：教学楼A101，投影仪、白板",
+    teacherInfo: "电子邮箱：zhang@example.com",
+    comments: [
+      "课程内容深入，适合打好数学基础。",
+      "老师讲解详细，有助于理解复杂概念。",
+    ],
+    courseNumber: "MATH101",
+    sequenceNumber: "001",
   },
   {
     id: "2",
@@ -51,8 +62,18 @@ const sampleCourses: Course[] = [
       { day: 2, start: 4, duration: 2 }, // 周二4-5节
       { day: 4, start: 1, duration: 1 }, // 周四1节
     ],
+    department: "数学与统计学院",
+    time: "周二 14:00-16:00 / 周四 09:00-10:00",
+    teachingInfo: "教室：教学楼B202，配备计算机实验环境",
+    teacherInfo: "电子邮箱：li@example.com",
+    comments: [
+      "逻辑严谨，理论性强。",
+      "课程安排合理，适合数学爱好者。",
+    ],
+    courseNumber: "MATH102",
+    sequenceNumber: "002",
   },
-  // 可以添加更多课程
+  // 可以添加更多课程，确保每个课程对象包含所有必需的属性
 ];
 
 export default function MainPage() {

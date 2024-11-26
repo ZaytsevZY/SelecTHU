@@ -138,7 +138,9 @@ export default function CourseTable({
               borderColor={borderColor}
               position="sticky"
               top="0"
-              bg={useColorModeValue("white", "gray.800")}
+              bg="white"
+              _dark={{ bg: "gray.800" }}
+              // bg={useColorModeValue("white", "gray.800")}
               zIndex={1}
             >
               节次
@@ -151,7 +153,9 @@ export default function CourseTable({
                 borderColor={borderColor}
                 position="sticky"
                 top="0"
-                bg={useColorModeValue("white", "gray.800")}
+                bg="white"
+                _dark={{ bg: "gray.800" }}
+                // bg={useColorModeValue("white", "gray.800")}
                 zIndex={1}
               >
                 {day}
@@ -171,7 +175,9 @@ export default function CourseTable({
                 height={`${slotHeight}px`}
                 position="sticky"
                 left="0"
-                bg={useColorModeValue("white", "gray.800")}
+                bg="white"
+                _dark={{ bg: "gray.800" }}
+                // bg={useColorModeValue("white", "gray.800")}
                 zIndex={1}
               >
                 {time}

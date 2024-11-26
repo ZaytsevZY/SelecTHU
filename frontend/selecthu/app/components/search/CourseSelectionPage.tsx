@@ -1,21 +1,12 @@
 // app/components/search/CourseSelectionPage.tsx
+
 "use client";
 
 import { Box, Flex } from "@chakra-ui/react";
 import { useState } from "react";
 import CoursesTable from "./CoursesTable";
 import SelectedCourseInfo from "./SelectedCourseInfo";
-
-interface Course {
-  id: string;
-  name: string;
-  department: string;
-  time: string;
-  instructor: string;
-  teachingInfo: string;
-  teacherInfo: string;
-  comments: string[];
-}
+import { Course } from "../../types/course";
 
 const CourseSelectionPage = () => {
   // 初始化课程数据，包括高等数学和软件工程
@@ -23,28 +14,52 @@ const CourseSelectionPage = () => {
     {
       id: "math101",
       name: "高等数学",
+      teacher: "李四",
+      classroom: "理学楼201",
+      type: "必修",
+      credits: 4,
+      timeSlots: [
+        {
+          day: 1,        // 周一
+          start: 8,      // 08:00
+          duration: 2,   // 持续2节
+        },
+      ],
       department: "数学与统计学院",
       time: "周一 08:00-10:00",
-      instructor: "李四",
-      teachingInfo: "教室：理学楼201",
+      teachingInfo: "教室：理学楼201", // 非可选属性
       teacherInfo: "电子邮箱：lisi@example.com",
       comments: [
         "课程内容深入，适合打好数学基础。",
         "老师讲解详细，有助于理解复杂概念。",
       ],
+      courseNumber: "MATH101",
+      sequenceNumber: "001",
     },
     {
       id: "sweng201",
       name: "软件工程",
+      teacher: "王五",
+      classroom: "软件楼303",
+      type: "选修",
+      credits: 3,
+      timeSlots: [
+        {
+          day: 3,        // 周三
+          start: 14,     // 14:00
+          duration: 2,   // 持续2节
+        },
+      ],
       department: "计算机学院",
       time: "周三 14:00-16:00",
-      instructor: "王五",
-      teachingInfo: "教室：软件楼303",
+      teachingInfo: "教室：软件楼303", // 非可选属性
       teacherInfo: "电子邮箱：wangwu@example.com",
       comments: [
         "实用性强，项目实践丰富。",
         "课程安排合理，适合提升编程技能。",
       ],
+      courseNumber: "SWENG201",
+      sequenceNumber: "002",
     },
   ]);
 

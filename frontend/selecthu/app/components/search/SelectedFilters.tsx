@@ -17,7 +17,11 @@ interface SelectedFiltersProps {
 }
 
 const SelectedFilters: React.FC<SelectedFiltersProps> = ({ selectedFilters, removeFilter }) => {
-  // 根据筛选类型获取显示标签
+  // Call hooks at the top level
+  const containerBg = useColorModeValue("white", "gray.800");
+  const filterBg = useColorModeValue("gray.100", "gray.700");
+
+  // Function to get filter labels
   const getFilterLabel = (type: string): string => {
     switch (type) {
       case "courseName":
@@ -37,7 +41,7 @@ const SelectedFilters: React.FC<SelectedFiltersProps> = ({ selectedFilters, remo
 
   return (
     <Box
-      bg={useColorModeValue("white", "gray.800")}
+      bg={containerBg}
       p={4}
       borderRadius="md"
       boxShadow="md"
@@ -47,7 +51,7 @@ const SelectedFilters: React.FC<SelectedFiltersProps> = ({ selectedFilters, remo
         {selectedFilters.map((filter) => (
           <Box
             key={filter.type}
-            bg={useColorModeValue("gray.100", "gray.700")}
+            bg={filterBg} // Use the variable instead of calling the hook here
             p={3}
             borderRadius="md"
             display="flex"

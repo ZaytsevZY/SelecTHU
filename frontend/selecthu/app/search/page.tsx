@@ -1,4 +1,5 @@
 // app/search/page.tsx
+
 "use client";
 
 import {
@@ -16,19 +17,8 @@ import SelectedFilters from "../components/search/SelectedFilters";
 import CoursesTable from "../components/search/CoursesTable";
 import SelectedCourseInfo from "../components/search/SelectedCourseInfo";
 
-interface Course {
-  id: string;
-  courseNumber: string;      // 新增：课程号
-  sequenceNumber: string;    // 新增：课序号
-  name: string;
-  credits: number;           // 新增：学分
-  department: string;
-  time: string;
-  instructor: string;
-  teachingInfo: string;
-  teacherInfo: string;
-  comments: string[];
-}
+// 从统一的类型文件导入 Course 接口
+import { Course, TimeSlot } from "../types/course";
 
 export default function SearchPage() {
   // 管理已选择的筛选条件
@@ -60,9 +50,15 @@ export default function SearchPage() {
       name: "高等数学",
       credits: 4,
       department: "数学与统计学院",
-      time: "周一 08:00-10:00",
-      instructor: "李四",
-      teachingInfo: "教室：理学楼201",
+      time: "周一 08:00-10:00 / 周三 09:00-12:00",
+      teacher: "李四", // 使用 teacher 而非 instructor
+      classroom: "理学楼201",
+      type: "必修", // 添加 type 属性
+      timeSlots: [
+        { day: 1, start: 8, duration: 2 }, // 周一08:00-10:00
+        { day: 3, start: 9, duration: 3 }, // 周三09:00-12:00
+      ], // 添加 timeSlots 属性
+      teachingInfo: "教室：理学楼201，配备投影仪和白板",
       teacherInfo: "电子邮箱：lisi@example.com",
       comments: [
         "课程内容深入，适合打好数学基础。",
@@ -76,9 +72,15 @@ export default function SearchPage() {
       name: "软件工程",
       credits: 3,
       department: "计算机学院",
-      time: "周三 14:00-16:00",
-      instructor: "王五",
-      teachingInfo: "教室：软件楼303",
+      time: "周三 14:00-16:00 / 周五 10:00-12:00",
+      teacher: "王五", // 使用 teacher 而非 instructor
+      classroom: "软件楼303",
+      type: "选修", // 添加 type 属性
+      timeSlots: [
+        { day: 3, start: 14, duration: 2 }, // 周三14:00-16:00
+        { day: 5, start: 10, duration: 2 }, // 周五10:00-12:00
+      ], // 添加 timeSlots 属性
+      teachingInfo: "教室：软件楼303，配备计算机和白板",
       teacherInfo: "电子邮箱：wangwu@example.com",
       comments: [
         "实用性强，项目实践丰富。",
@@ -92,9 +94,15 @@ export default function SearchPage() {
       name: "线性代数",
       credits: 3,
       department: "数学与统计学院",
-      time: "周二 10:00-12:00",
-      instructor: "张三",
-      teachingInfo: "教室：理学楼202",
+      time: "周二 10:00-12:00 / 周四 14:00-15:00",
+      teacher: "张三",
+      classroom: "理学楼202",
+      type: "必修",
+      timeSlots: [
+        { day: 2, start: 10, duration: 2 }, // 周二10:00-12:00
+        { day: 4, start: 14, duration: 1 }, // 周四14:00-15:00
+      ],
+      teachingInfo: "教室：理学楼202，配备投影仪和白板",
       teacherInfo: "电子邮箱：zhangsan@example.com",
       comments: [
         "课程逻辑严谨，适合数学爱好者。",
@@ -108,9 +116,15 @@ export default function SearchPage() {
       name: "数据结构",
       credits: 4,
       department: "计算机学院",
-      time: "周四 16:00-18:00",
-      instructor: "赵六",
-      teachingInfo: "教室：软件楼304",
+      time: "周四 16:00-18:00 / 周一 10:00-12:00",
+      teacher: "赵六",
+      classroom: "软件楼304",
+      type: "必修",
+      timeSlots: [
+        { day: 4, start: 16, duration: 2 }, // 周四16:00-18:00
+        { day: 1, start: 10, duration: 2 }, // 周一10:00-12:00
+      ],
+      teachingInfo: "教室：软件楼304，配备计算机和白板",
       teacherInfo: "电子邮箱：zhaoliu@example.com",
       comments: [
         "内容全面，涵盖各种重要数据结构。",

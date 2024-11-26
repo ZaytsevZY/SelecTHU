@@ -41,6 +41,9 @@ const FilterSection: React.FC<FilterSectionProps> = ({ selectedFilters, addFilte
   // 当前输入的筛选值
   const [inputValue, setInputValue] = useState<string>("");
 
+  const boxBg = useColorModeValue("white", "gray.800");
+  const filterBg = useColorModeValue("gray.100", "gray.700");
+
   // 处理筛选类型选择
   const handleFilterSelect = (type: string) => {
     setActiveFilter(type);
@@ -180,7 +183,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({ selectedFilters, addFilte
 
   return (
     <Box
-      bg={useColorModeValue("white", "gray.800")}
+      bg={boxBg}
       p={4}
       borderRadius="md"
       boxShadow="md"
@@ -204,7 +207,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({ selectedFilters, addFilte
                 orientation="vertical"
                 height="24px"
                 mx={2}
-                borderColor={useColorModeValue("gray.200", "gray.600")}
+                borderColor={filterBg}
                 display="inline-block"
                 verticalAlign="middle"
               />
