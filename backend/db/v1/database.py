@@ -51,24 +51,25 @@ def cal_curriculum_id(courses: dict) -> str:
 
 
 # 计算课程id
-def cal_course_id(code: str, name: str, teacher: str) -> str:
+def cal_course_id(code: str, number: str, name: str, teacher: str) -> str:
     """
-    计算课程id（使用课程代码、课程名称、教师名作为依据）
+    计算课程id（使用课程代码、课序号、课程名称、教师名作为依据）
 
     :param code: 课程号
+    :param number: 课序号
     :param name: 课程名
     :param teacher: 教师名
     :return: 课程id
     """
     try:
         assert (
-            code is not None and name is not None and teacher is not None
+            code is not None and number is not None and name is not None and teacher is not None
         )  # 参数不完整
         source_str: str = ""
 
         # 课程信息
         # 使用code, name, teacher字段作为计算id的依据
-        source_str = f"{code}{const.SALT[5]}{name}{const.SALT[4]}{teacher}"
+        source_str = f"{code}{const.SALT[5]}{number}{const.SALT[6]}{name}{const.SALT[4]}{teacher}"
 
         # 创建sha256对象
         sha256 = hashlib.sha256()  # 创建sha256对象

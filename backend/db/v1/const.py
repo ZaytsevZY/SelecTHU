@@ -19,7 +19,8 @@ logging.basicConfig(
     level=logging.INFO,
     format="(%(asctime)s) [%(type)s] %(message)s",
 )
-
+if not os.path.exists(BASE_DIR / "logs"):
+    os.makedirs(BASE_DIR / "logs")
 
 # 培养方案键值（对应必限任）
 CURRICULUM_KEYS: Final[tuple] = ("0", "1", "2")

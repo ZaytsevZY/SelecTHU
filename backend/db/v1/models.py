@@ -11,37 +11,37 @@ class User(models.Model):
     """
     用户表（总表）
 
-    :param `id`: 学号（用户唯一标识）（主键）
+    :param `user_id`: 学号（用户唯一标识）（主键）
     :param `nickname`: 用户昵称
     :param `avatar`: 用户头像
     :param `favorite`: 收藏课程
     :param `decided`: 已选课程
-    :param `curriculum`: 培养方案（外键）
+    :param `curriculum`: 培养方案
     """
 
     # 个人基本信息
     user_id = models.CharField(
-        max_length=12, primary_key=True, unique=True, name="id"
+        max_length=16, primary_key=True, unique=True, db_column="id", 
     )  # 学号（用户唯一标识）（主键）
-    user_nickname = models.CharField(max_length=64, name="nickname")  # 用户昵称
+    user_nickname = models.CharField(max_length=64, db_column="nickname")  # 用户昵称
     user_avatar = models.ImageField(
-        name="avatar", blank=True, default="default_avater.png", upload_to="avatar/"
+        db_column="avatar", blank=True, default="default_avater.png", upload_to="avatar/"
     )  # 用户头像
 
     user_curriculum = models.CharField(
-        max_length=64, name="curriculum", default="", blank=True
+        max_length=64, db_column="curriculum", default="", blank=True
     )  # 培养方案
 
     # 课程信息（列表）
     user_favorite = models.JSONField(
-        name="favorite", blank=True, default=[]
+        db_column="favorite", blank=True, default=[]
     )  # 收藏课程
     # 内部结构：
     # [
     #     <course_id: str>,
     #     ...
     # ]
-    user_decided = models.JSONField(name="decided", blank=True, default=[])  # 已选课程
+    user_decided = models.JSONField(db_column="decided", blank=True, default=[])  # 已选课程
     # 内部结构：
     # [
     #     {
@@ -61,20 +61,20 @@ class Curriculum(models.Model):
     """
     培养方案表
 
-    :param `id`: 培养方案的sha256值（主键）
+    :param `id_`: 培养方案的sha256值（主键）
     :param `courses`: 课程列表
     """
 
     # id_ = models.AutoField(primary_key=True, name="id")  # 自增id（主键）
-    _id = models.CharField(
-        primary_key=True, max_length=64, name="id"
+    id_ = models.CharField(
+        primary_key=True, max_length=64, unique=True, db_column="id" 
     )  # id（主键）（使用sha256）
     # # 识别信息（专业、年级）
     # major = models.CharField(max_length=20, name="major", null=True)  # 专业
     # semester = models.IntegerField(name="semester", null=True)  # 学期
 
     # 课程信息（列表）
-    courses = models.JSONField(name="courses")  # 课程列表
+    courses = models.JSONField(db_column="courses")  # 课程列表
     # 内部结构：
     # {
     #     key1: [
@@ -100,24 +100,24 @@ class CoursesDetails(models.Model):
     """
     课程分表，保存课程详细信息（抽象基类）
 
-    :param `id`: 课程识别码（主键）
+    :param `id_`: 课程识别码（主键）
     :param `info`: 课程详细信息
     :param `score`: 课程评分
     :param `comments`: 课程评价
     """
 
     id_ = models.CharField(
-        max_length=64, primary_key=True, name="id"
+        max_length=64, primary_key=True, unique=True, db_column="id"
     )  # 课程识别码（主键）
 
     # 课程信息
-    info = models.JSONField(name="info")  # 课程详细信息
+    info = models.JSONField(db_column="info")  # 课程详细信息
     # 内部结构：
     # {
     #     TODO: 完善表结构
     # }
-    score = models.FloatField(name="score", blank=True, default=-1)  # 课程评分
-    comments = models.JSONField(name="comments", blank=True, default=[])  # 课程评价
+    score = models.FloatField(db_column="score", blank=True, default=-1)  # 课程评分
+    comments = models.JSONField(db_column="comments", blank=True, default=[])  # 课程评价
     # 内部结构：
     # [
     #     {
@@ -137,33 +137,37 @@ class MainCourses(models.Model):
     """
     课程总表，保存课程主要信息
 
-    :param `id`: 课程识别码（主键）
+    :param `id_`: 课程识别码（主键）
     :param `code`: 课程代码
+    :param `number`: 课序号
     :param `name`: 课程名称
     :param `teacher`: 教师名称
     :param `credit`: 学分
     :param `period`: 学时
     :param `time`: 开课时间
     :param `department`: 开课院系
-    :param `type`: 课程类型
+    :param `type`: 课程类型（通识课组）
+    :param `capacity`: 本科生课容量
     :param `selection`: 选课情况
     :param `link`: 详细信息指向的表
     """
 
     id_ = models.CharField(
-        max_length=64, primary_key=True, name="id"
+        max_length=64, primary_key=True, unique=True, db_column="id"
     )  # 课程识别码（主键）
 
     # 课程信息
-    code = models.CharField(max_length=16, name="code")  # 课程代码
-    name = models.CharField(max_length=64, name="name")  # 课程名称
-    teacher = models.CharField(max_length=32, name="teacher")  # 教师名称
-    credit = models.IntegerField(name="credit")  # 学分
-    period = models.IntegerField(name="period")  # 学时
-    time = models.CharField(max_length=64, name="time")  # 开课时间
-    department = models.CharField(max_length=64, name="department")  # 开课院系
-    type_ = models.CharField(max_length=64, name="type")  # 课程类型
-    selection = models.JSONField(name="selection", blank=True, default={})  # 选课情况
+    code = models.CharField(max_length=16, db_column="code")  # 课程代码
+    number = models.CharField(max_length=16, db_column="number")  # 课序号
+    name = models.CharField(max_length=64, db_column="name")  # 课程名称
+    teacher = models.CharField(max_length=32, db_column="teacher")  # 教师名称
+    credit = models.IntegerField(db_column="credit")  # 学分
+    period = models.IntegerField(db_column="period")  # 学时
+    time = models.CharField(max_length=64, db_column="time")  # 开课时间
+    department = models.CharField(max_length=64, db_column="department")  # 开课院系
+    type_ = models.CharField(max_length=64, db_column="type")  # 课程类型
+    capacity = models.IntegerField(db_column="capacity")  # 本科生课容量
+    selection = models.JSONField(db_column="selection", blank=True, default={})  # 选课情况
     # 内部结构：
     # {
     #     "total": <total: int>,  # 总人数
@@ -184,7 +188,7 @@ class MainCourses(models.Model):
 
     # 详细信息指向表
     link = models.OneToOneField(
-        to=CoursesDetails, on_delete=models.CASCADE, name="link"
+        to=CoursesDetails, on_delete=models.CASCADE, db_column="link"
     )  # 详细信息指向表
 
     class Meta:

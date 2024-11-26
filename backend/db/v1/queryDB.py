@@ -20,7 +20,7 @@ def get_curriculum(id_: str):
     """
     查询培养方案
 
-    :param `id_`: 用户id（不叫id是避免与关键字冲突）
+    :param `id_`: 用户id
     :return: 返回数据（在请求正确的情况下包含培养方案 `curriculum<type = list>` ）
     """
     const.logger.info("get_curriculum: calling", extra=const.LOGGING_TYPE.INFO)
@@ -36,7 +36,7 @@ def get_curriculum(id_: str):
         curriculum = {}
         if user.user_curriculum:
             user_curriculum_id = user.user_curriculum
-            curriculum = models.Curriculum.objects.get(id=user_curriculum_id).values(
+            curriculum = models.Curriculum.objects.get(id_=user_curriculum_id).values(
                 "courses"
             )
 
@@ -67,7 +67,7 @@ def get_curriculum_existance(curriculum: dict):
         # 计算id
         id_ = cal_curriculum_id(curriculum)
         # 查询数据库
-        curriculum = models.Curriculum.objects.filter(id=id_).exists()
+        curriculum = models.Curriculum.objects.filter(id_=id_).exists()
         return {"status": 200, "value": curriculum}
     except Exception as e:
         const.logger.error(
@@ -106,7 +106,7 @@ def get_user(id_: str):
         if user.user_curriculum:
             user_curriculum_id = user.user_curriculum
             user_curriculum = models.Curriculum.objects.filter(
-                id=user_curriculum_id
+                id_=user_curriculum_id
             ).values("courses")
             if user_curriculum.exists():
                 curriculum = user_curriculum.first()
@@ -143,15 +143,17 @@ def get_courses(count: int = -1):
         if count == -1:
             # 查询数据库
             courses = models.MainCourses.objects.all().values(
-                "id",
+                "id_",
                 "code",
+                "number",
                 "name",
                 "teacher",
                 "credit",
                 "period",
                 "time",
                 "department",
-                "type",
+                "type_",
+                "capacity",
                 "selection",
             )
             if not courses:
@@ -163,8 +165,9 @@ def get_courses(count: int = -1):
 
             # 查询数据库
             courses = models.MainCourses.objects.all().values(
-                "id",
+                "id_",
                 "code",
+                "number",
                 "name",
                 "teacher",
                 "credit",
@@ -172,6 +175,7 @@ def get_courses(count: int = -1):
                 "time",
                 "department",
                 "type",
+                "capacity",
                 "selection",
             )[:count]
             if not courses:
@@ -188,6 +192,7 @@ def get_courses(count: int = -1):
 def get_course(
     id_: str = None,
     code: str = None,
+    number: str = None,
     name: str = None,
     teacher: str = None,
     credit: int = None,
@@ -202,13 +207,14 @@ def get_course(
 
     :param `id_`: 课程识别码
     :param `code`: 课程代码
+    :param `number`: 课序号
     :param `name`: 课程名称
     :param `teacher`: 教师名称
     :param `credit`: 学分
     :param `period`: 学时
     :param `time`: 开课时间
     :param `department`: 开课院系
-    :param `type_`: 课程类型
+    :param `type_`: 课程类型（通识课组）
     :param `search_mode`: 搜索模式（默认为`exact` - 精确搜索，可选： `fuzzy` - 模糊搜索，`exclude` - 排除搜索）
 
     :return: 返回数据（包含字典 `course<type = list[dict]>` ）
@@ -223,9 +229,11 @@ def get_course(
         course_list = models.MainCourses.objects.all()
         if search_mode == "exact" or search_mode == "fuzzy":
             if id_ is not None:
-                course_list = course_list.filter(id=id_)
+                course_list = course_list.filter(id_=id_)
             if code is not None:
                 course_list = course_list.filter(code=code)
+            if number is not None:
+                course_list = course_list.filter(number=number)
             if name is not None:
                 if search_mode == "exact":
                     course_list = course_list.filter(name=name)
@@ -246,9 +254,11 @@ def get_course(
                 course_list = course_list.filter(type=type_)
         elif search_mode == "exclude":
             if id_ is not None:
-                course_list = course_list.exclude(id=id_)
+                course_list = course_list.exclude(id_=id_)
             if code is not None:
                 course_list = course_list.exclude(code=code)
+            if number is not None:
+                course_list = course_list.exclude(number=number)
             if name is not None:
                 course_list = course_list.exclude(name=name)
             if teacher is not None:
@@ -265,9 +275,9 @@ def get_course(
         if course_list.exists() is False:
             return {"status": 200, "course": []}
 
-        # 不返回link字段和id字段
+        # 不返回link字段
         course_list = course_list.values(
-            "id",
+            "id_",
             "code",
             "name",
             "teacher",
@@ -275,7 +285,8 @@ def get_course(
             "period",
             "time",
             "department",
-            "type",
+            "type_",
+            "capacity",
             "selection",
         )
         course_list = list(course_list)
@@ -311,11 +322,12 @@ def get_course(
 
 
 # 查询课程详细信息（通过课程信息）
-def get_course_detail_by_info(code: str, name: str, teacher: str):
+def get_course_detail_by_info(code: str, number: str, name: str, teacher: str):
     """
     查询课程详细信息
 
     :param `code`: 课程号
+    :param `number`: 课序号
     :param `name`: 课程名
     :param `teacher`: 教师名
 
@@ -329,10 +341,10 @@ def get_course_detail_by_info(code: str, name: str, teacher: str):
         return const.RESPONSE_400
 
     try:
-        id_ = cal_course_id(code, name, teacher)
+        id_ = cal_course_id(code, number, name, teacher)
         # 查询数据库
-        course = models.CoursesDetails.objects.filter(id=id_).values(
-            "id", "info", "score", "comments"
+        course = models.CoursesDetails.objects.filter(id_=id_).values(
+            "id_", "info", "score", "comments"
         )
 
         # 课程不存在
@@ -368,8 +380,8 @@ def get_course_detail_by_id(id_: str):
 
     try:
         # 查询数据库
-        course = models.CoursesDetails.objects.filter(id=id_).values(
-            "id", "info", "score", "comments"
+        course = models.CoursesDetails.objects.filter(id_=id_).values(
+            "_id", "info", "score", "comments"
         )
 
         # 课程不存在

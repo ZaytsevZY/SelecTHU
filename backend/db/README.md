@@ -18,9 +18,41 @@ db
 ├── __init__.py
 └── README.md
 ```
+## v1版本
+### 数据库模型结构
+- 定义源文件：见 [`models.py`](./v1/models.py)
 
-## 接口列表
-### v1版本
+1. `User` 用户表
+    - `user_id <CharField>` : 用户ID（学号）
+    - `nickname <CharField>` : 用户昵称
+    - `avatar <ImageField>` : 用户头像
+    - `favorite <JSONField>` : 用户备选课程
+    - `decided <JSONField>` : 用户已选课程
+    - `curriculum <CharField>` : 用户培养方案（对应培养方案ID）
+2. `Curriculum` 培养方案表
+    - `curriculum_id <CharField>` : 培养方案ID
+    - `curriculum <JSONField>` : 培养方案内容
+3. `MainCourses` 课程表
+    - `id_ <CharField>` : 课程识别码
+    - `code <CharField>` : 课程号
+    - `number <CharField>` : 课序号
+    - `name <CharField>` : 课程名
+    - `teacher <CharField>` : 教师名
+    - `credit <IntegerField>` : 学分
+    - `period <IntegerField>` : 学时
+    - `time <JSONField>` : 开课时间
+    - `type_ <CharField>` : 课程类型（通识课组）
+    - `department <CharField>` : 开课院系
+    - `capacity <IntegerField>` : 课程容量
+    - `selection <JSONField>` : 已选人数
+    - `link <CharField>` : 课程链接（指向 `CourseDetails` 表项）
+4. `CourseDetails` 课程详细信息表
+    - `id_ <CharField>` : 课程识别码
+    - `info <JSONField>` : 课程详细信息
+    - `score <JSONField>` : 课程评分
+    - `comment <JSONField>` : 课程评价
+
+### 接口列表
 - 使用方法：导入包 `import db.v1.utils as db_utils`
 
 #### 数据库查询
@@ -60,14 +92,17 @@ db
         - `400` : 参数错误
         - `404` : 未找到用户
         - `500` : 内部错误
-    - 说明: 查询用户信��。在返回值中， `avatar` 为用户头像链接的URL，详细说明见 [头像字段说明](#avatar-explain) 。
+    - 说明: 查询用户信息。在返回值中， `avatar` 为用户头像链接的URL，详细说明见 [头像字段说明](#avatar-explain) 。
 
 5. **查询课程列表**<span id="get_courses"></span>
     - 对应函数: `db_utils.get_courses`
-    - 请求参数: 无
+    - 请求参数: 
+        -  `count<int>` (可选): 返回课程数量，默认为 `-1` ，即返回所有课程
     - 返回值: `{ "status": <int>, "courses": <list[dict]> }`
     - 错误码：
+        - `400` : 参数错误
         - `404` : 未找到课程
+        - `500` : 内部错误
     - 说明: 查询课程列表。
 
 6. **按条件搜索课程简要信息**<span id="get_course"></span>
@@ -75,13 +110,15 @@ db
     - 请求参数:
         - `id_<str>` (可选): 课程识别码
         - `code<str>` (可选): 课程代码
+        - `number<str>` (可选): 课序号
         - `name<str>` (可选): 课程名称
         - `teacher<str>` (可选): 教师名称
         - `credit<str>` (可选): 学分
         - `period<str>` (可选): 学时
         - `time<dict>` (可选): 开课时间，详细说明见 [时间字段说明](#time-explain)
         - `department<str>` (可选): 开课院系
-        - `type_<str>` (可选): 课程类型
+        - `type_<str>` (可选): 课程类型（通识课组）
+        - `capacity<int>` (可选): 课程容量
         - `search_mode<str>` (可选): 搜索模式，可选值为 `exact` （精确匹配）、`fuzzy` （模糊匹配）和  `exclude` （排除匹配），默认为 `exact`
     - 返回值: `{ "status": <int>, "course": <list[dict]> }`
     - 错误码：
@@ -94,6 +131,7 @@ db
         - 对应函数: `db_utils.get_course_detail_by_info`
         - 请求参数:
             - `code<str>` : 课程号
+            - `number<str>` : 课序号
             - `name<str>` : 课程名
             - `teacher<str>` : 教师名
         - 返回值: `{ "status": <int>, "details": <dict> }`
@@ -212,6 +250,100 @@ db
     - 错误码：
         - `500` : 内部错误
     - 说明: 删除所有培养方案信息。
+
+10. **添加课程信息**<span id="add_course"></span>
+    - 对应函数: `db_utils.add_course`
+    - 请求参数:
+        - `course<dict>` : 课程信息（包含课程简要信息和课程详细信息）
+    - 返回值: `{ "status": <int>, "msg": <str> }`
+    - 错误码：
+        - `400` : 参数错误
+        - `409` : 课程已存在
+        - `500` : 内部错误
+    - 说明: 添加新课程信息。
+
+11. **添加课程评价和评分**<span id="add_course_comment"></span>
+    - 对应函数: `db_utils.add_course_comment`
+    - 请求参数:
+        - `course_id<str>` : 课程识别码
+        - `comment<dict>` : 课程评价（包含评论时间、评分和评论内容）
+    - 返回值: `{ "status": <int>, "msg": <str> }`
+    - 错误码：
+        - `400` : 参数错误
+        - `404` : 课程不存在
+        - `500` : 内部错误
+    - 说明: 为指定课程添加评论和评分。
+
+12. **修改志愿分配**<span id="change_course_level"></span>
+    - 对应函数: `db_utils.change_course_level`
+    - 请求参数:
+        - `user_id<str>` : 用户ID
+        - `course_id<str>` : 课程识别码
+        - `selection_type<str>` : 选课志愿类型
+    - 返回值: `{ "status": <int>, "msg": <str> }`
+    - 错误码：
+        - `400` : 参数错误
+        - `404` : 用户不存在
+        - `500` : 内部错误
+    - 说明: 修改用户的课程志愿分配。
+
+13. **修改用户信息**<span id="change_user_info"></span>
+    - 对应函数: `db_utils.change_user_info`
+    - 请求参数:
+        - `user_id<str>` : 用户ID
+        - `nickname<str>` (可选): 用户昵称
+        - `avatar` (可选): 用户头像
+    - 返回值: `{ "status": <int>, "msg": <str> }`
+    - 错误码：
+        - `400` : 参数错误
+        - `404` : 用户不存在
+        - `500` : 内部错误
+    - 说明: 修改用户的昵称和头像信息。
+
+14. **移除用户**<span id="remove_user"></span>
+    - 对应函数: `db_utils.remove_user`
+    - 请求参数:
+        - `id_<str>` : 用户ID
+    - 返回值: `{ "status": <int>, "msg": <str> }`
+    - 错误码：
+        - `400` : 参数错误
+        - `404` : 用户不存在
+        - `500` : 内部错误
+    - 说明: 从数据库中移除指定用户。
+
+15. **移除已选课程**<span id="remove_course_from_decided"></span>
+    - 对应函数: `db_utils.remove_course_from_decided`
+    - 请求参数:
+        - `user_id<str>` : 用户ID
+        - `course_id<str>` : 课程识别码
+    - 返回值: `{ "status": <int>, "msg": <str> }`
+    - 错误码：
+        - `400` : 参数错误
+        - `404` : 用户或课程不存在
+        - `500` : 内部错误
+    - 说明: 从用户的已选课程中移除指定课程。
+
+16. **删除课程信息**<span id="remove_course"></span>
+    - 对应函数: `db_utils.remove_course`
+    - 请求参数:
+        - `course_id<str>` : 课程识别码
+    - 返回值: `{ "status": <int>, "msg": <str> }`
+    - 错误码：
+        - `400` : 参数错误
+        - `404` : 课程不存在
+        - `500` : 内部错误
+    - 说明: 删除指定课程的信息。
+
+17. **删除所有课程评价和评分**<span id="remove_all_course_comment"></span>
+    - 对应函数: `db_utils.remove_all_course_comment`
+    - 请求参数:
+        - `course_id<str>` : 课程识别码
+    - 返回值: `{ "status": <int>, "msg": <str> }`
+    - 错误码：
+        - `400` : 参数错误
+        - `404` : 课程不存在
+        - `500` : 内部错误
+    - 说明: 删除指定课程的所有评论和评分。
 
 #### 其他信息
 1. 更多常量定义见 [`const.py`](./v1/const.py)
