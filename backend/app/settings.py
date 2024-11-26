@@ -36,7 +36,8 @@ ALLOWED_HOSTS = [
     "*",
 ]
 
-JWT_EXPIRE_HOURS = os.getenv("JWT_EXPIRE_HOURS", 24)
+JWT_EXPIRE_HOURS = int(os.getenv("JWT_EXPIRE_HOURS", 24))
+JWT_SECRET = os.getenv("JWT_SECRET", "no-jwt-secret")
 
 # Application definition
 
