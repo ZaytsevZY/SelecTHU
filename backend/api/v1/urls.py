@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('backend-status', views.backend_status, name='backend_status'),  # 测试接口
+    path('backend-db-status/', views.backend_db_status, name='backend_db_status'),  # 测试接口
     # 登录和登出
     path('login-default/', views.login_default, name='login_default'),  # 登录
     path('login/', views.login, name='login'),  # 登录
