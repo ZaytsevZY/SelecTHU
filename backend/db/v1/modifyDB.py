@@ -393,6 +393,45 @@ def change_user_info(user_id: str, nickname: str = None, avatar=None):
         return const.RESPONSE_500
 
 
+# 修改用户培养方案
+def change_user_curriculum(user_id: str, curriculum: dict):
+    """
+    修改用户培养方案
+
+    :param user_id: 用户id
+    :param curriculum: 培养方案
+    :return: 执行结果
+    """
+    const.logger.info("change_user_curriculum: calling", extra=const.LOGGING_TYPE.INFO)
+    # 检查输入合法性
+    if isinstance(user_id, str) is False or isinstance(curriculum, dict) is False:
+        return const.RESPONSE_400
+
+    try:
+        # 检查用户是否存在
+        if not models.User.objects.filter(user_id=user_id).exists():
+            return const.RESPONSE_404
+
+        # 计算id
+        curriculum_id = cal_curriculum_id(curriculum)
+        # 检查是否存在
+        if not models.Curriculum.objects.filter(curriculum_id=curriculum_id).exists():
+            # 添加培养方案
+            curriculum_ = models.Curriculum(curriculum_id=curriculum_id, courses=curriculum)
+            curriculum_.save()
+
+        # 修改用户培养方案
+        models.User.objects.filter(user_id=user_id).update(user_curriculum=curriculum_id)
+
+        # 返回结果
+        return {"status": 200, "msg": "change user curriculum successfully"}
+    except Exception as e:
+        const.logger.info(
+            "change_user_curriculum: %s", e, extra=const.LOGGING_TYPE.ERROR
+        )
+        return const.RESPONSE_500
+    
+
 # 修改课程简要信息
 def change_course_main():
     """
