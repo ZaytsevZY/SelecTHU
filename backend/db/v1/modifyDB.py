@@ -89,7 +89,7 @@ def add_course(course: dict):
         time = course.get("time", "")
         department = course.get("department", "")
         type_ = course.get("type", "")
-        capacity = course.get("capacity", 0)
+        capacity = int(course.get("capacity", 0))
 
         selection = course.get("selection", const.SELECTION_BLANK)
 
