@@ -11,6 +11,7 @@ def db_status():
     """
     测试接口连接
     """
+    const.logger.info("db_status: calling", extra=const.LOGGING_TYPE.INFO)
     return {"status": 200, "msg": "connect successfully"}
 
 
@@ -20,8 +21,9 @@ def get_curriculum(id_: str):
     查询培养方案
 
     :param `id_`: 用户id（不叫id是避免与关键字冲突）
-    :return: 返回的信息（在请求正确的情况下包含培养方案 `curriculum<type = list>` ）
+    :return: 返回数据（在请求正确的情况下包含培养方案 `curriculum<type = list>` ）
     """
+    const.logger.info("get_curriculum: calling", extra=const.LOGGING_TYPE.INFO)
 
     # 检查输入合法性
     if isinstance(id_, str) is False:
@@ -34,11 +36,14 @@ def get_curriculum(id_: str):
         curriculum = {}
         if user.user_curriculum:
             user_curriculum_id = user.user_curriculum
-            curriculum = models.Curriculum.objects.get(id=user_curriculum_id).values("courses")
+            curriculum = models.Curriculum.objects.get(id=user_curriculum_id).values(
+                "courses"
+            )
 
         # 返回结果
         return {"status": 200, "curriculum": curriculum}
     except Exception as e:
+        const.logger.error("get_curriculum: %s", e, extra=const.LOGGING_TYPE.ERROR)
         return const.RESPONSE_500
 
 
@@ -48,8 +53,11 @@ def get_curriculum_existance(curriculum: dict):
     查询培养方案是否存在
 
     :param `curriculum`: 培养方案
-    :return: 返回的信息（在请求正确的情况下包含布尔值 `value<type = bool>` ）
+    :return: 返回数据（在请求正确的情况下包含布尔值 `value<type = bool>` ）
     """
+    const.logger.info(
+        "get_curriculum_existance: calling", extra=const.LOGGING_TYPE.INFO
+    )
 
     # 检查输入合法性
     if isinstance(curriculum, dict) is False:
@@ -62,6 +70,9 @@ def get_curriculum_existance(curriculum: dict):
         curriculum = models.Curriculum.objects.filter(id=id_).exists()
         return {"status": 200, "value": curriculum}
     except Exception as e:
+        const.logger.error(
+            "get_curriculum_existance: %s", e, extra=const.LOGGING_TYPE.ERROR
+        )
         return const.RESPONSE_500
 
 
@@ -71,15 +82,17 @@ def get_user(id_: str):
     查询用户信息
 
     :param `id_`: 用户id（学号）
-    :return: 返回的信息
+    :return: 返回数据
     （包含用户信息
     `nickname<type = str>`，
     `avatar<type = str>` （为图片路径），
-    `favorite<type = list>`,
-    `decided<type = list>`,
+    `favorite<type = list>`，
+    `decided<type = list>`，
     `curriculum<type = list>`
     ）
     """
+    const.logger.info("get_user: calling", extra=const.LOGGING_TYPE.INFO)
+
     # 检查输入合法性
     if isinstance(id_, str) is False:
         return const.RESPONSE_400
@@ -92,10 +105,12 @@ def get_user(id_: str):
         curriculum = {}
         if user.user_curriculum:
             user_curriculum_id = user.user_curriculum
-            user_curriculum = models.Curriculum.objects.filter(id=user_curriculum_id).values("courses")
+            user_curriculum = models.Curriculum.objects.filter(
+                id=user_curriculum_id
+            ).values("courses")
             if user_curriculum.exists():
                 curriculum = user_curriculum.first()
-            
+
         # 返回结果
         return {
             "status": 200,
@@ -106,6 +121,7 @@ def get_user(id_: str):
             "curriculum": curriculum,
         }
     except Exception as e:
+        const.logger.error("get_user: %s", e, extra=const.LOGGING_TYPE.ERROR)
         return const.RESPONSE_500
 
 
@@ -115,11 +131,13 @@ def get_courses(count: int = -1):
     查询课程列表（指定数量）
 
     :param `count`: 查询数量（默认为-1，即全部查询）
-    :return: 返回的信息（在请求正确的情况下包含字典列表 `courses<type = list[dict]>` ）
+    :return: 返回数据（在请求正确的情况下包含字典列表 `courses<type = list[dict]>` ）
     """
+    const.logger.info("get_courses: calling", extra=const.LOGGING_TYPE.INFO)
+
     if isinstance(count, int) is False:
         return const.RESPONSE_400
-    
+
     try:
         courses = []
         if count == -1:
@@ -142,7 +160,7 @@ def get_courses(count: int = -1):
             # 判断count是否合法（是否超过数据库中的数据数量）
             if count <= 0 or count > models.MainCourses.objects.count():
                 return const.RESPONSE_400
-            
+
             # 查询数据库
             courses = models.MainCourses.objects.all().values(
                 "id",
@@ -162,6 +180,7 @@ def get_courses(count: int = -1):
         # 返回结果
         return {"status": 200, "courses": list(courses)}
     except Exception as e:
+        const.logger.error("get_courses: %s", e, extra=const.LOGGING_TYPE.ERROR)
         return const.RESPONSE_500
 
 
@@ -192,8 +211,10 @@ def get_course(
     :param `type_`: 课程类型
     :param `search_mode`: 搜索模式（默认为`exact` - 精确搜索，可选： `fuzzy` - 模糊搜索，`exclude` - 排除搜索）
 
-    :return: 返回的信息（包含字典 `course<type = list[dict]>` ）
+    :return: 返回数据（包含字典 `course<type = list[dict]>` ）
     """
+    const.logger.info("get_course: calling", extra=const.LOGGING_TYPE.INFO)
+
     if search_mode not in const.SEARCH_MODE:
         return const.RESPONSE_400
     try:
@@ -284,7 +305,8 @@ def get_course(
                 course_list.pop(i)
 
         return {"status": 200, "course": course_list}
-    except:
+    except Exception as e:
+        const.logger.error("get_course: %s", e, extra=const.LOGGING_TYPE.ERROR)
         return const.RESPONSE_500
 
 
@@ -297,17 +319,20 @@ def get_course_detail_by_info(code: str, name: str, teacher: str):
     :param `name`: 课程名
     :param `teacher`: 教师名
 
-    :return: 返回的信息（包含 详细信息 `details<type = dict>` ）
+    :return: 返回数据（包含 详细信息 `details<type = dict>` ）
     """
+    const.logger.info(
+        "get_course_detail_by_info: calling", extra=const.LOGGING_TYPE.INFO
+    )
+
     if code is None or name is None or teacher is None:
         return const.RESPONSE_400
-    
+
     try:
         id_ = cal_course_id(code, name, teacher)
         # 查询数据库
-        course = (
-            models.CoursesDetails.objects.filter(id=id_)
-            .values("id", "info", "score", "comments")
+        course = models.CoursesDetails.objects.filter(id=id_).values(
+            "id", "info", "score", "comments"
         )
 
         # 课程不存在
@@ -317,11 +342,14 @@ def get_course_detail_by_info(code: str, name: str, teacher: str):
         # 如果有多个结果，说明发生错误
         if course.count() > 1:
             return const.RESPONSE_500
-        
+
         details = course.first()
 
         return {"status": 200, "details": details}
-    except:
+    except Exception as e:
+        const.logger.error(
+            "get_course_detail_by_info: %s", e, extra=const.LOGGING_TYPE.ERROR
+        )
         return const.RESPONSE_500
 
 
@@ -331,16 +359,17 @@ def get_course_detail_by_id(id_: str):
     查询课程详细信息
 
     :param `id_`: 课程id
-    :return: 返回的信息（包含 详细信息 `details<type = dict>` ）
+    :return: 返回数据（包含 详细信息 `details<type = dict>` ）
     """
+    const.logger.info("get_course_detail_by_id: calling", extra=const.LOGGING_TYPE.INFO)
+
     if id_ is None:
         return const.RESPONSE_400
-    
+
     try:
         # 查询数据库
-        course = (
-            models.CoursesDetails.objects.filter(id=id_)
-            .values("id", "info", "score", "comments")
+        course = models.CoursesDetails.objects.filter(id=id_).values(
+            "id", "info", "score", "comments"
         )
 
         # 课程不存在
@@ -354,5 +383,8 @@ def get_course_detail_by_id(id_: str):
         details = course.first()
 
         return {"status": 200, "details": details}
-    except:
+    except Exception as e:
+        const.logger.error(
+            "get_course_detail_by_id: %s", e, extra=const.LOGGING_TYPE.ERROR
+        )
         return const.RESPONSE_500
