@@ -3,7 +3,7 @@
 定义并实现了数据库的修改操作的接口
 """
 
-from database import *
+from .database import *
 
 
 """添加类操作"""

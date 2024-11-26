@@ -3,7 +3,7 @@
 定义并实现了数据库查询操作的接口
 """
 
-from database import *
+from .database import *
 
 
 # 测试接口连接
