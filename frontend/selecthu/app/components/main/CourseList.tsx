@@ -11,16 +11,14 @@ import {
   useColorModeValue,
   chakra,
 } from "@chakra-ui/react";
-import { Course } from "@/app/types/course";
+import { Course, TimeSlot } from "@/app/types/course";
 import CourseRow from "./CourseRow";
 
 // 引入 React DnD 所需的模块
 import { useDrop } from "react-dnd";
 
 // 定义拖拽类型
-const ItemTypes = {
-  COURSE: "course",
-};
+import { ItemTypes } from "./constants";
 
 interface CourseListProps {
   availableCourses: Course[];
@@ -58,7 +56,7 @@ export default function CourseList({
   drop(boxRef);
 
   // 格式化时间段
-  const formatTimeSlots = (timeSlots: any[]) => {
+  const formatTimeSlots = (timeSlots: TimeSlot[]) => {
     return timeSlots
       .map((ts) => `周${ts.day} ${ts.start}-${ts.start + ts.duration - 1}节`)
       .join(", ");
@@ -73,6 +71,8 @@ export default function CourseList({
       shadow="sm"
       border="1px"
       borderColor={borderColor}
+      overflow="auto" // 允许滚动，以适应内容变化
+      maxHeight="400px" // 根据需要调整最大高度
     >
       <chakra.h2 fontSize="lg" mb={2}>
         备选清单

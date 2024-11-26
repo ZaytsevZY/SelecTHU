@@ -13,6 +13,8 @@ frontend/
 │   │   │   │   ├── Navbar.tsx           // 导航栏组件
 │   │   │   │   └── ColorModeToggle.tsx  // 暗色模式切换按钮
 │   │   │   ├── main/
+│   │   │   │   ├── constants.ts      // 共享和管理拖拽类型
+│   │   │   │   ├── CourseBlock.tsx      // 课表中课程卡片组件
 │   │   │   │   ├── CourseTable.tsx      // 课程表组件
 │   │   │   │   ├── CourseSelection.tsx      // 管理课程状态组件
 │   │   │   │   ├── CustomDragLayer.tsx      // 管理拖拽组件

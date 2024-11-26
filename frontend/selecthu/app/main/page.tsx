@@ -9,7 +9,6 @@ import {
   GridItem,
   useColorModeValue,
   Button,
-  VStack,
   Flex,
 } from "@chakra-ui/react";
 import Navbar from "../components/layout/Navbar";
@@ -63,7 +62,7 @@ export default function MainPage() {
   // 管理已选课程列表（课程表中的课程）
   const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
 
-  // 颜色数组
+  // 颜色数组，确保颜色名称与 Chakra UI 的颜色方案一致
   const colors = [
     "blue",
     "green",

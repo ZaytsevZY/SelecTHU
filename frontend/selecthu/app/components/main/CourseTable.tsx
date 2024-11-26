@@ -1,6 +1,6 @@
 // components/main/CourseTable.tsx
 
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import {
   Table,
   Thead,
@@ -16,13 +16,10 @@ import {
 import { Course } from "@/app/types/course";
 
 // 引入 React DnD 所需的模块
-import { useDrop, useDrag } from "react-dnd";
-import { getEmptyImage } from "react-dnd-html5-backend";
+import { useDrop } from "react-dnd";
+import { ItemTypes } from "./constants"; // 推荐将 ItemTypes 移到单独的文件中
 
-// 定义拖拽类型
-const ItemTypes = {
-  COURSE: "course",
-};
+import CourseBlock from "./CourseBlock"; // 确保 CourseBlock 是独立的组件
 
 interface CourseTableProps {
   selectedCourses: Course[];
@@ -37,9 +34,6 @@ export default function CourseTable({
 }: CourseTableProps) {
   const borderColor = useColorModeValue("gray.200", "gray.700");
   const bgColor = useColorModeValue("white", "gray.800");
-
-  // 添加拖拽中的课程ID状态
-  const [draggedCourseId, setDraggedCourseId] = React.useState<string | null>(null);
 
   // 时间段显示（节次从1-15）
   const timeSlots = [
@@ -119,6 +113,9 @@ export default function CourseTable({
     return getCourseColor(courseId);
   };
 
+  // 定义固定的每节课的高度
+  const slotHeight = 60; // 每节课的高度，保持一致
+
   return (
     <chakra.div
       ref={boxRef}
@@ -128,12 +125,22 @@ export default function CourseTable({
       shadow="sm"
       border="1px"
       borderColor={borderColor}
-      overflowX="auto"
+      overflow="auto" // 允许滚动而不是固定整体尺寸
+      width="100%" // 让表格自适应父容器宽度
+      // 不设置固定的高度和宽度，以保持页面布局合理
     >
-      <Table size="sm" variant="simple">
+      <Table size="sm" variant="simple" width="100%">
         <Thead>
           <Tr>
-            <Th width="80px" border="1px solid" borderColor={borderColor}>
+            <Th
+              width="100px"
+              border="1px solid"
+              borderColor={borderColor}
+              position="sticky"
+              top="0"
+              bg={useColorModeValue("white", "gray.800")}
+              zIndex={1}
+            >
               节次
             </Th>
             {weekDays.map((day) => (
@@ -142,6 +149,10 @@ export default function CourseTable({
                 textAlign="center"
                 border="1px solid"
                 borderColor={borderColor}
+                position="sticky"
+                top="0"
+                bg={useColorModeValue("white", "gray.800")}
+                zIndex={1}
               >
                 {day}
               </Th>
@@ -149,17 +160,21 @@ export default function CourseTable({
           </Tr>
         </Thead>
         <Tbody>
-          {timeSlots.map((_, slotIndex) => (
-            // 移除了 height 属性
-            <Tr key={`slot-${slotIndex}`}>
+          {timeSlots.map((time, slotIndex) => (
+            // 使用固定高度
+            <Tr key={`slot-${slotIndex}`} height={`${slotHeight}px`}>
               <Td
                 fontSize="xs"
                 border="1px solid"
                 borderColor={borderColor}
                 textAlign="center"
-                height="60px" // 为节次列设置默认高度
+                height={`${slotHeight}px`}
+                position="sticky"
+                left="0"
+                bg={useColorModeValue("white", "gray.800")}
+                zIndex={1}
               >
-                {`${slotIndex + 1}`}
+                {time}
               </Td>
               {weekDays.map((_, dayIndex) => {
                 if (!shouldRenderCell(dayIndex + 1, slotIndex + 1)) {
@@ -179,16 +194,14 @@ export default function CourseTable({
                     border="1px solid"
                     borderColor={borderColor}
                     verticalAlign="top"
-                    // 为空白单元格设置默认高度
-                    height={course ? undefined : "60px"}
+                    height={course ? `${slotHeight * rowSpan}px` : `${slotHeight}px`} // 设置单元格高度
                   >
                     {course && shouldShowCourse(dayIndex + 1, slotIndex + 1) ? (
                       <CourseBlock
                         course={course}
                         color={color}
                         duration={rowSpan} // 传递持续时间
-                        setDraggedCourseId={setDraggedCourseId}
-                        draggedCourseId={draggedCourseId}
+                        slotHeight={slotHeight} // 传递每节课的高度
                       />
                     ) : null}
                   </Td>
@@ -199,77 +212,5 @@ export default function CourseTable({
         </Tbody>
       </Table>
     </chakra.div>
-  );
-}
-
-// 课程块组件
-interface CourseBlockProps {
-  course: Course;
-  color: string;
-  duration: number; // 新增持续时间属性
-  setDraggedCourseId: (id: string | null) => void;
-  draggedCourseId: string | null;
-}
-
-function CourseBlock({
-  course,
-  color,
-  duration,
-  setDraggedCourseId,
-  draggedCourseId,
-}: CourseBlockProps) {
-  // 使用 useDrag 钩子
-  const [, drag, preview] = useDrag(() => ({
-    type: ItemTypes.COURSE,
-    item: () => {
-      // 在这里设置拖拽中的课程ID
-      setDraggedCourseId(course.id);
-      return { course };
-    },
-    // 拖拽结束时，清除拖拽中的课程ID
-    end: () => {
-      setDraggedCourseId(null);
-    },
-  }));
-
-  // 抑制默认的拖拽预览
-  useEffect(() => {
-    preview(getEmptyImage(), { captureDraggingState: true });
-  }, [preview]);
-
-  // 创建一个 ref
-  const boxRef = useRef<HTMLDivElement>(null);
-  drag(boxRef);
-
-  // 使用 useColorModeValue，根据主题模式选择适当的颜色
-  const bgColor = useColorModeValue(`${color}.100`, `${color}.700`);
-  const textColor = useColorModeValue("black", "white");
-
-  // 判断当前课程是否正在被拖拽
-  const isBeingDragged = draggedCourseId === course.id;
-
-  // 计算课程块的高度
-  const slotHeight = 60; // 每节课的高度，可以根据需要调整
-  const totalHeight = duration * slotHeight;
-
-  return (
-    <Box
-      ref={boxRef}
-      p={2}
-      bg={bgColor}
-      borderRadius="none"
-      minHeight={`${totalHeight}px`} // 设置最小高度
-      width="100%"
-      fontSize="xs"
-      display="flex"
-      flexDirection="column"
-      justifyContent="center"
-      opacity={isBeingDragged ? 0 : 1}
-      color={textColor}
-    >
-      <Text fontWeight="bold">{course.name}</Text>
-      <Text>{course.teacher}</Text>
-      <Text>{course.classroom}</Text>
-    </Box>
   );
 }

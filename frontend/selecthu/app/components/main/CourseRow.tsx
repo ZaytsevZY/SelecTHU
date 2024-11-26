@@ -11,11 +11,8 @@ import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { Course, TimeSlot } from "@/app/types/course";
 
 import { useDrag, DragSourceMonitor } from "react-dnd";
+import { ItemTypes } from "./constants"; // 引入常量
 import { getEmptyImage } from "react-dnd-html5-backend";
-
-const ItemTypes = {
-  COURSE: "course",
-};
 
 interface CourseRowProps {
   course: Course;
@@ -54,15 +51,16 @@ export default function CourseRow({
       key={course.id}
       ref={rowRef}
       opacity={isDragging ? 0.5 : 1}
-      cursor="move"
+      cursor="grab"
+      _hover={{ bg: 'gray.100' }} // 可选的悬停样式
     >
       <Td>
         <Badge
-          colorScheme={courseColor} // 使用传递的颜色方案
+          colorScheme={courseColor} // 确保 courseColor 是有效的 Chakra 颜色方案
           px={2}
           py={1}
           borderRadius="md"
-          color="white"
+          // 移除了 color="white" 以避免与 colorScheme 冲突
         >
           {course.name}
         </Badge>
