@@ -21,7 +21,10 @@ import { useState } from "react";
 
 interface Course {
   id: string;
+  courseNumber: string;      // 新增：课程号
+  sequenceNumber: string;    // 新增：课序号
   name: string;
+  credits: number;           // 新增：学分
   department: string;
   time: string;
   instructor: string;
@@ -70,15 +73,17 @@ const CoursesTable: React.FC<CoursesTableProps> = ({
       </Text>
 
       {/* 课程表 */}
-      <Table variant="simple">
-        <Thead>
+      <Table variant="simple" border="1px" borderColor={useColorModeValue("gray.200", "gray.700")}>
+        <Thead bg={useColorModeValue("gray.100", "gray.700")}>
           <Tr>
-            <Th>操作</Th>
-            <Th>课程名称</Th>
-            <Th>开课院系</Th>
-            <Th>开课时间</Th>
-            <Th>授课教师</Th>
-            <Th>选课人数情况</Th>
+            <Th borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>操作</Th>
+            <Th borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>课程号-课序号</Th>
+            <Th borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>课程名称</Th>
+            <Th borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>学分</Th>
+            <Th borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>开课院系</Th>
+            <Th borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>授课教师</Th>
+            <Th borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>上课时间</Th>
+            <Th>选课情况</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -94,7 +99,7 @@ const CoursesTable: React.FC<CoursesTableProps> = ({
               onClick={() => onSelectCourse(course.id)}
               _hover={{ bg: useColorModeValue("gray.50", "gray.600") }}
             >
-              <Td>
+              <Td borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>
                 <IconButton
                   icon={<AddIcon />}
                   size="sm"
@@ -106,10 +111,24 @@ const CoursesTable: React.FC<CoursesTableProps> = ({
                   }}
                 />
               </Td>
-              <Td>{course.name}</Td>
-              <Td>{course.department}</Td>
-              <Td>{course.time}</Td>
-              <Td>{course.instructor}</Td>
+              <Td borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>
+                {course.courseNumber}-{course.sequenceNumber}
+              </Td>
+              <Td borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>
+                {course.name}
+              </Td>
+              <Td borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>
+                {course.credits}
+              </Td>
+              <Td borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>
+                {course.department}
+              </Td>
+              <Td borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>
+                {course.instructor}
+              </Td>
+              <Td borderRight="1px solid" borderColor={useColorModeValue("gray.200", "gray.700")}>
+                {course.time}
+              </Td>
               <Td>
                 {/* 选课人数情况展示为色带（示例，实际可根据数据调整） */}
                 <Box w="100px" h="8px" bg="green.400" borderRadius="md" />

@@ -18,7 +18,10 @@ import SelectedCourseInfo from "../components/search/SelectedCourseInfo";
 
 interface Course {
   id: string;
+  courseNumber: string;      // 新增：课程号
+  sequenceNumber: string;    // 新增：课序号
   name: string;
+  credits: number;           // 新增：学分
   department: string;
   time: string;
   instructor: string;
@@ -48,11 +51,14 @@ export default function SearchPage() {
     setSelectedFilters(selectedFilters.filter((f) => f.type !== type));
   };
 
-  // 初始化课程数据，包括高等数学和软件工程
+  // 初始化课程数据，包括高等数学和软件工程，新增两门课程
   const [courses, setCourses] = useState<Course[]>([
     {
       id: "math101",
+      courseNumber: "MATH101",
+      sequenceNumber: "01",
       name: "高等数学",
+      credits: 4,
       department: "数学与统计学院",
       time: "周一 08:00-10:00",
       instructor: "李四",
@@ -65,7 +71,10 @@ export default function SearchPage() {
     },
     {
       id: "sweng201",
+      courseNumber: "SWENG201",
+      sequenceNumber: "01",
       name: "软件工程",
+      credits: 3,
       department: "计算机学院",
       time: "周三 14:00-16:00",
       instructor: "王五",
@@ -76,7 +85,38 @@ export default function SearchPage() {
         "课程安排合理，适合提升编程技能。",
       ],
     },
-    // 可以根据需要添加更多课程
+    {
+      id: "math102",
+      courseNumber: "MATH102",
+      sequenceNumber: "02",
+      name: "线性代数",
+      credits: 3,
+      department: "数学与统计学院",
+      time: "周二 10:00-12:00",
+      instructor: "张三",
+      teachingInfo: "教室：理学楼202",
+      teacherInfo: "电子邮箱：zhangsan@example.com",
+      comments: [
+        "课程逻辑严谨，适合数学爱好者。",
+        "老师讲解清晰，课后习题丰富。",
+      ],
+    },
+    {
+      id: "sweng202",
+      courseNumber: "SWENG202",
+      sequenceNumber: "02",
+      name: "数据结构",
+      credits: 4,
+      department: "计算机学院",
+      time: "周四 16:00-18:00",
+      instructor: "赵六",
+      teachingInfo: "教室：软件楼304",
+      teacherInfo: "电子邮箱：zhaoliu@example.com",
+      comments: [
+        "内容全面，涵盖各种重要数据结构。",
+        "适合打算深入学习算法的学生。",
+      ],
+    },
   ]);
 
   // 管理选中的课程 ID
