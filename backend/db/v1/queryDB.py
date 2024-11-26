@@ -36,9 +36,9 @@ def get_curriculum(user_id: str):
         curriculum = dict()
         if user.user_curriculum:
             user_curriculum_id = user.user_curriculum
-            curriculum = models.Curriculum.objects.get(user_id=user_curriculum_id).values(
-                "courses"
-            )
+            try_curriculum = models.Curriculum.objects.filter(user_id=user_curriculum_id)
+            if try_curriculum.exists():
+                curriculum = try_curriculum.values("courses").first()
 
         # 返回结果
         return {"status": 200, "curriculum": curriculum}

@@ -22,8 +22,7 @@ logging.basicConfig(
     format="(%(asctime)s) [%(type)s] %(message)s",
 )
 
-
-# 培养方案键值（对应必限任）
+# 培养方案键值（对应必限体）
 CURRICULUM_KEYS: Final[tuple] = ("0", "1", "2")
 
 # 哈希盐字符串
