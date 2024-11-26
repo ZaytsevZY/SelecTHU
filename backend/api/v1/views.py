@@ -3,18 +3,25 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+
 from django.core.files.storage import default_storage
 
-from utils import generate_jwt, login_required
+from api.v1.utils import generate_jwt, login_required
 
 from db.v1 import utils as db_utils
 
 @api_view(["GET"])
-def backend_status(request):
+@permission_classes([AllowAny])
+def backend_db_status(request):
     """
     后端状态检查
     """
-    return Response({"status": 200}, status=status.HTTP_200_OK)
+    db_status = db_utils.db_status()
+    if db_status["status"] != 200:
+        return Response({"status": 500}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response({"status": 200, "message": "successfully connect to backend and database!"}, status=status.HTTP_200_OK)
 
 @api_view(["POST"])
 def login_default(request):
