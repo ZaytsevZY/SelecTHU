@@ -11,6 +11,7 @@
 .vscode/
 __pycache__/
 migrations/
+.gitignore
 
 # dependencies
 node_modules
