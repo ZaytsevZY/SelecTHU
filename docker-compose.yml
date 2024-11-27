@@ -8,6 +8,7 @@ services:
       - ${DB_PORT}
     restart: always
     environment:
+      - PGUSER=${DB_USER}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
@@ -24,18 +25,18 @@ services:
   backend:
     restart: always
     build: ./backend
+    volumes:
+      - ./backend:/backend
+    expose:
+      - "8001"
+    depends_on:
+      db:
+        condition: service_healthy
     command: >
       bash -c
       "python manage.py makemigrations &&
       python manage.py migrate &&
-      gunicorn -w 4 -b 0.0.0.0:8000 -k eventlet app.wsgi:application"
-    volumes:
-      - ./backend:/backend
-    expose:
-      - "8000"
-    depends_on:
-      db:
-        condition: service_healthy
+      gunicorn -w 4 -b 0.0.0.0:8001 -k eventlet app.wsgi:application"
     networks:
       - db_network
       - app_network
@@ -46,8 +47,7 @@ services:
     build: ./frontend/selecthu
     expose:
       - "8000"
-    volumes:
-      - ./frontend/selecthu:/app
+    command: "node /app/server.js"
     depends_on:
       - backend
     networks:
@@ -58,7 +58,7 @@ services:
     restart: always
     image: nginx:latest
     ports:
-      - "8000:8000"
+      - "8000:8080"
     volumes:
       - ./nginx:/etc/nginx/conf.d
     depends_on:
