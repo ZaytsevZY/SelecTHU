@@ -49,8 +49,7 @@ services:
     volumes:
       - ./frontend/selecthu:/app
     depends_on:
-      backend:
-        condition: service_healthy
+      - backend
     networks:
       - web_network
 
